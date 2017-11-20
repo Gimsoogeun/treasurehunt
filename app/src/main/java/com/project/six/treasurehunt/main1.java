@@ -92,36 +92,22 @@ public class main1 extends AppCompatActivity implements  GoogleApiClient.OnConne
     //firebase databse 를 초기화함
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
+
+
         //파이어베이스 데이터베이스에서 가져올 벨류의 이름
         mDatabaseReference=mFirebaseDatabase.getReference("name");
-        mChildEventListener=new ChildEventListener() {
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String msg= dataSnapshot.getValue().toString();
+                textView.setText(msg);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };
-        mDatabaseReference.addChildEventListener(mChildEventListener);
-
+        });
     }
 
     //auth 관련 초기화함
@@ -263,5 +249,21 @@ public class main1 extends AppCompatActivity implements  GoogleApiClient.OnConne
             updateProfile();
         }
 
+    }
+    public void clickedButton(View view){
+        //파이어베이스 데이터베이스에서 가져올 벨류의 이름
+        mDatabaseReference=mFirebaseDatabase.getReference("name");
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String msg= dataSnapshot.getValue().toString();
+                textView.setText(msg);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
