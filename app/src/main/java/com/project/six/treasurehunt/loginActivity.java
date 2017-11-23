@@ -1,5 +1,6 @@
 package com.project.six.treasurehunt;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -47,7 +48,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildEventListener;
-
+    private ValueEventListener mValueEventListener;
 
     //views
     //Sign in button
@@ -93,8 +94,9 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
 
 
         //파이어베이스 데이터베이스에서 가져올 벨류의 이름
+
         mDatabaseReference=mFirebaseDatabase.getReference("name");
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+        mValueEventListener =new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String msg= dataSnapshot.getValue().toString();
@@ -105,7 +107,8 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        mDatabaseReference.addValueEventListener(mValueEventListener);
     }
 
     //auth 관련 초기화함
@@ -175,11 +178,15 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     protected void onStart(){
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+//        mGoogleApiClient.connect();
+
     }
     @Override
     public void onStop() {
         super.onStop();
-        mAuth.removeAuthStateListener(mAuthListener);
+        if(mAuthListener!=null){
+           mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
     @Override
     protected void onResume() {
@@ -188,7 +195,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mDatabaseReference.removeEventListener(mChildEventListener);
+
     }
 
     @Override
@@ -263,5 +270,9 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
 
             }
         });
+    }
+    public void testNextActivity(View view){
+        Intent intent=new Intent(this, main.class);
+        startActivity(intent);
     }
 }
