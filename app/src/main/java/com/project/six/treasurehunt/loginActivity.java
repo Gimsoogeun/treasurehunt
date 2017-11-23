@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +36,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Random;
 
-public class main1 extends AppCompatActivity implements  GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
+public class loginActivity extends AppCompatActivity implements  GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
     //firebase -Authentication
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -68,7 +66,7 @@ public class main1 extends AppCompatActivity implements  GoogleApiClient.OnConne
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main1);
+        setContentView(R.layout.loginactivity);
         //초기화함
         initViews();
         initFirebaseDatabase();
@@ -240,7 +238,7 @@ public class main1 extends AppCompatActivity implements  GoogleApiClient.OnConne
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
-                                Toast.makeText(main1.this, "Authentication failed.",
+                                Toast.makeText(loginActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                             }
                         }
