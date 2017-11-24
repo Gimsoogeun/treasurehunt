@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".main" />
-        <activity android:name=".writePost"></activity>
+        <activity android:name=".writePost" />
+        <activity android:name=".postsActivity"></activity>
     </application>
 
 </manifest>

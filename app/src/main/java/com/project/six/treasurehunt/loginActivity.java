@@ -95,23 +95,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
 
-
-        //파이어베이스 데이터베이스에서 가져올 벨류의 이름
-
-        mDatabaseReference=mFirebaseDatabase.getReference("name");
-        mValueEventListener =new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String msg= dataSnapshot.getValue().toString();
-                textView.setText(msg);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        mDatabaseReference.addValueEventListener(mValueEventListener);
     }
 
     //auth 관련 초기화함
@@ -139,15 +122,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
 
 
     }
-    //처음 켰을시 로그인이 안되어있다면 손님숫자.
-    private void initValues() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) {
-            userName = "Guest" + new Random().nextInt(5000);
-        } else {
-            userName = user.getDisplayName();
-        }
-    }
 
     //auth 리스너에서 사용할 함수
     //현재 로그인 상태에 따라 view들을 숨기거나 보여줌.
@@ -160,7 +134,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             mTxtProfileInfo.setVisibility(View.GONE);
             mImgProfile.setVisibility(View.GONE);
             //추가로 로그인 안됬을시 변경할것들 추가
-            Toast.makeText(this,"현재 로그인이 안되어있다!!",Toast.LENGTH_LONG).show();
         }else{
             //로그인이 되어있다!!!
             signInButton.setVisibility(View.GONE);
@@ -171,9 +144,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             userName=user.getDisplayName();
             mTxtProfileInfo.setText(userName);
             Picasso.with(this).load(user.getPhotoUrl()).into(mImgProfile);
-            Toast.makeText(this,"현재 로그인이 되어있다!!",Toast.LENGTH_LONG).show();
-
-
         }
     }
 
@@ -250,6 +220,11 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
                             if (!task.isSuccessful()) {
                                 Toast.makeText(loginActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
+                            }else{
+                                FirebaseUser user=mAuth.getCurrentUser();
+                                writeNewUser(user.getUid(),user.getDisplayName(),user.getEmail());
+                                Toast.makeText(loginActivity.this, user.getDisplayName()+"님 환영합니다.",
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -258,24 +233,16 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         }
 
     }
-    public void clickedButton(View view){
-        //파이어베이스 데이터베이스에서 가져올 벨류의 이름
-        mDatabaseReference=mFirebaseDatabase.getReference("name");
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String msg= dataSnapshot.getValue().toString();
-                textView.setText(msg);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
     public void testNextActivity(View view){
         Intent intent=new Intent(this, main.class);
         startActivity(intent);
+    }
+    public void writeNewUser(String userId, String name, String email ){
+
+        mDatabaseReference=mFirebaseDatabase.getReference();
+        mDatabaseReference.child("users").child(userId).child("userName").setValue(name);
+        mDatabaseReference.child("users").child(userId).child("email").setValue(email);
+
     }
 }

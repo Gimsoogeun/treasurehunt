@@ -1,5 +1,6 @@
 package com.project.six.treasurehunt;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -26,7 +27,7 @@ public class main extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setTheme(android.R.style.Theme_NoTitleBar);
 
-        mEditText=(EditText)findViewById(R.id.testInput);
+       // mEditText=(EditText)findViewById(R.id.testInput);
         initFirebaseDatabase();
     }
 
@@ -37,6 +38,7 @@ public class main extends AppCompatActivity {
 
 
     public void pushButton(View view) {
+        /*
         String message=mEditText.getText().toString();
 
         if (!TextUtils.isEmpty(message)) {
@@ -48,6 +50,9 @@ public class main extends AppCompatActivity {
             //여기서는 message 밑에 임의의 name으로 key값을 만들고 그밑에 thisisparta라는 key name에 message값을 넣는다.
             mDatabaseReference.push().child("thisIsSparta").setValue(message);
         }
+        */
+        Intent intent=new Intent(this, writePost.class);
+        startActivity(intent);
     }
 
 }
