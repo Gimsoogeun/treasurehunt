@@ -26,8 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="?android:attr/colorPrimaryDark"
-            android:text="button2"
-
+            android:text="게시글 보기"
+            android:onClick="pushPostViewButton"
             android:textColor="@android:color/white"
             tools:background="@color/colorPrimarysmoothDark" />
         <Button

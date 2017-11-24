@@ -5,21 +5,24 @@ package com.project.six.treasurehunt;
  */
 
 public class postContext {
-    String title;
-    String context1;
-    String context2;
+    public String title;
+    public String context1;
+    public String context2;
 
-    long time;
-
-
-    String writerName;
-    String writerUID;
+    public long time;
 
 
-    public postContext(String title,String context1,String context2){
+    public String writerName;
+    public String writerUID;
+
+    public String firebaseKey;
+
+
+
+  /*  public postContext(String title,String context1,String context2){
         this.title=title;
         this.context1=context1;
         this.context2=context2;
 
-    }
+    }*/
 }

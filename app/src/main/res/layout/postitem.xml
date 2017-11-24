@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    
+    android:minHeight="50dp"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/postimage"
+        android:layout_weight="1"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        app:srcCompat="@drawable/chest" />
+    <TextView
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:text="titleeee"
+        android:lines="1"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textSize="25sp"
+        android:id="@+id/posttitle"/>
+    <TextView
+        android:layout_weight="1"
+        android:text="/"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
+    <TextView
+        android:textAlignment="center"
+        android:singleLine="true"
+        android:lines="1"
+        android:layout_weight="1"
+        android:text="writer"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textSize="18sp"
+        android:id="@+id/writername"/>
+</LinearLayout>

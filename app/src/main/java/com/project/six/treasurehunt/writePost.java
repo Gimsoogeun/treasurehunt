@@ -55,8 +55,13 @@ public class writePost extends AppCompatActivity {
             Toast.makeText(this,"보상 내용 입력해 주세요.",Toast.LENGTH_SHORT).show();
             return;
         }
-        postContext post=new postContext(titleET.getText().toString(),context1.getText().toString(),context2.getText().toString());
+        //postContext post=new postContext(titleET.getText().toString(),context1.getText().toString(),context2.getText().toString());
+
+        postContext post=new postContext();
         FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+        post.title=titleET.getText().toString();
+        post.context1=context1.getText().toString();
+        post.context2=context2.getText().toString();
         post.writerName=user.getDisplayName();
         post.writerUID=user.getUid();
 

@@ -54,5 +54,22 @@ public class main extends AppCompatActivity {
         Intent intent=new Intent(this, writePost.class);
         startActivity(intent);
     }
+    public void pushPostViewButton(View view) {
+        /*
+        String message=mEditText.getText().toString();
+
+        if (!TextUtils.isEmpty(message)) {
+            mEditText.setText("");
+            //child 는 밑에 항목을 만드는것 여기서라면 message 항목 밑에 ggg항목을 만들고
+            // 임의의 key인 name을 무작위로 설정한후 그 무작위의 값을 thatit으로논다
+            mDatabaseReference.child("ggg").push().setValue("thatit");
+
+            //여기서는 message 밑에 임의의 name으로 key값을 만들고 그밑에 thisisparta라는 key name에 message값을 넣는다.
+            mDatabaseReference.push().child("thisIsSparta").setValue(message);
+        }
+        */
+        Intent intent=new Intent(this, postsActivity.class);
+        startActivity(intent);
+    }
 
 }
