@@ -50,7 +50,18 @@ public class postsActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                String firebaseKey= dataSnapshot.getKey();
+                int count=mAdapter.getCount();
+                for(int i=0; i< count; i++){
+                    if(mAdapter.getItem(i).firebaseKey.equals(firebaseKey)){
+                        mAdapter.remove(mAdapter.getItem(i));
+                        postContext post=dataSnapshot.getValue(postContext.class);
+                        post.firebaseKey=dataSnapshot.getKey();
+                        mAdapter.add(post);
+                        mListView.smoothScrollToPosition(mAdapter.getCount());
 
+                    }
+                }
             }
 
             @Override
