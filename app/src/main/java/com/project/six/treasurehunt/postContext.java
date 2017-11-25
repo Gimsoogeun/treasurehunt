@@ -17,8 +17,10 @@ public class postContext {
 
     public String firebaseKey;
 
-
-
+    public double altitude; //고도
+    public double latitude; //경도
+    public double longitude; //위도
+    public boolean isfinded; //찾아졌는가
   /*  public postContext(String title,String context1,String context2){
         this.title=title;
         this.context1=context1;

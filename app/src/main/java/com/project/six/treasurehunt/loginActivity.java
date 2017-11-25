@@ -1,9 +1,17 @@
 package com.project.six.treasurehunt;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -75,7 +83,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         initViews();
         initFirebaseDatabase();
         initFirebaseAuth();
-
+        permissionCheck();
         Toast.makeText(this, "commit test", Toast.LENGTH_SHORT).show();
 
     }
@@ -254,5 +262,48 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     public void gomap(View view){
         Intent intent=new Intent(this, MapsActivity.class);
         startActivity(intent);
+    }
+    //인터넷과 위치의 권한 허가
+    public void permissionCheck(){
+        String[] permissions =new String[]{Manifest.permission.INTERNET,
+                Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
+            for(String permission:permissions){
+                int result= PermissionChecker.checkSelfPermission(this,permission);
+                if(result==PermissionChecker.PERMISSION_GRANTED){
+
+                }else {
+                    ActivityCompat.requestPermissions(this,permissions,1);
+                }
+            }
+        }
+        if(Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if(Build.VERSION.SDK_INT >= 23 &&
+                            ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED ||
+                            ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED ||
+                            ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+                        finish();//닫기
+                    }
+                }
+            });
+            alert.setMessage("앱을 사용하려면 권한이 필요합니다.");
+            if(Build.VERSION.SDK_INT >= 23 &&
+                    ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+                alert.show();
+            }
+            return;
+        }
+
     }
 }

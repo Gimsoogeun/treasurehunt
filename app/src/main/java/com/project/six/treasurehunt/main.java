@@ -1,6 +1,18 @@
 package com.project.six.treasurehunt;
 
+import android.*;
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Build;
+import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -8,19 +20,51 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class main extends AppCompatActivity {
+public class main extends FragmentActivity implements OnMapReadyCallback {
+    //초기 마커 위치입니다. 지도에 표기됨.
+    private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
+    double latitude;
+    double longitude;
+
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ValueEventListener mValueEventListener;
 
-    public  EditText mEditText;
 
+    private Marker currentMarker=null;
+    private GoogleMap googleMap;
+
+    FirebaseAuth mauth;
+    String userName;
+    FusedLocationProviderClient mFusedLocatioinClient;
+    LocationCallback mLocationCallback;
+    Location mCurrentLocation;
+    LocationRequest mLocationRequest;
+
+    public  EditText mEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,46 +72,109 @@ public class main extends AppCompatActivity {
 
        // mEditText=(EditText)findViewById(R.id.testInput);
         initFirebaseDatabase();
+        initView();
+
+        mFusedLocatioinClient=LocationServices.getFusedLocationProviderClient(this);
+        createLocationCallback();
+        createLocationRequest();
+        getCurrentLocation();
+
+    }
+    private void firstStemp(){
+        String[] permissions =new String[]{android.Manifest.permission.INTERNET,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
+            for(String permission:permissions){
+                int result= PermissionChecker.checkSelfPermission(this,permission);
+                if(result==PermissionChecker.PERMISSION_GRANTED){
+
+                }else {
+                    ActivityCompat.requestPermissions(this,permissions,1);
+                }
+            }
+        }
+        if(Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        setCurrentLocation(mFusedLocatioinClient.getLastLocation().getResult(),"현재 위치",userName);
     }
 
+    private void getCurrentLocation(){
+        String[] permissions =new String[]{android.Manifest.permission.INTERNET,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
+            for(String permission:permissions){
+                int result= PermissionChecker.checkSelfPermission(this,permission);
+                if(result==PermissionChecker.PERMISSION_GRANTED){
+
+                }else {
+                    ActivityCompat.requestPermissions(this,permissions,1);
+                }
+            }
+        }
+        if(Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        mFusedLocatioinClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
+    }
+
+    private void createLocationCallback(){
+        mLocationCallback=new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult){
+                super.onLocationResult(locationResult);
+                mCurrentLocation =locationResult.getLastLocation();
+                setCurrentLocation(mCurrentLocation,"현재 위치",userName);
+            }
+        };
+    }
+    private void createLocationRequest(){
+        mLocationRequest=new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference("message");
+        mauth=FirebaseAuth.getInstance();
+        FirebaseUser user=mauth.getCurrentUser();
+        userName=user.getDisplayName();
+    }
+    protected void onResume(){
+        super.onResume();
+        getCurrentLocation();
+    }
+    protected void onStop(){
+        super.onStop();
+        mFusedLocatioinClient.removeLocationUpdates(mLocationCallback);
     }
 
+    private void initView(){
+        SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+    }
 
     public void pushButton(View view) {
-        /*
-        String message=mEditText.getText().toString();
 
-        if (!TextUtils.isEmpty(message)) {
-            mEditText.setText("");
-            //child 는 밑에 항목을 만드는것 여기서라면 message 항목 밑에 ggg항목을 만들고
-            // 임의의 key인 name을 무작위로 설정한후 그 무작위의 값을 thatit으로논다
-            mDatabaseReference.child("ggg").push().setValue("thatit");
-
-            //여기서는 message 밑에 임의의 name으로 key값을 만들고 그밑에 thisisparta라는 key name에 message값을 넣는다.
-            mDatabaseReference.push().child("thisIsSparta").setValue(message);
-        }
-        */
         Intent intent=new Intent(this, writePost.class);
+        intent.putExtra("latitude",latitude);
+        intent.putExtra("longitude",longitude);
+
         startActivity(intent);
     }
     public void pushPostViewButton(View view) {
-        /*
-        String message=mEditText.getText().toString();
 
-        if (!TextUtils.isEmpty(message)) {
-            mEditText.setText("");
-            //child 는 밑에 항목을 만드는것 여기서라면 message 항목 밑에 ggg항목을 만들고
-            // 임의의 key인 name을 무작위로 설정한후 그 무작위의 값을 thatit으로논다
-            mDatabaseReference.child("ggg").push().setValue("thatit");
-
-            //여기서는 message 밑에 임의의 name으로 key값을 만들고 그밑에 thisisparta라는 key name에 message값을 넣는다.
-            mDatabaseReference.push().child("thisIsSparta").setValue(message);
-        }
-        */
         Intent intent=new Intent(this, postsActivity.class);
+
         startActivity(intent);
 
     }
@@ -75,4 +182,53 @@ public class main extends AppCompatActivity {
     public void currentInfo(View view){
 
     }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        // 구글 맵 객체를 불러온다.
+        this.googleMap = googleMap;
+
+        // 서울에 대한 위치 설정
+        LatLng seoul = new LatLng(37.52487, 126.92723);
+
+        UiSettings mapSetting;
+        mapSetting=this.googleMap.getUiSettings();
+        mapSetting.setZoomControlsEnabled(true);
+        googleMap.setMinZoomPreference(14);
+        //카메라를 서울 위치로 옮긴다.
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(seoul));
+    }
+    public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
+        if ( currentMarker != null ){
+            currentMarker.remove();
+        }
+
+        if ( location != null) {
+            //현재위치의 위도 경도 가져옴
+            LatLng currentLocation = new LatLng( location.getLatitude(), location.getLongitude());
+            latitude=location.getLatitude();
+            longitude=location.getLongitude();
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(currentLocation);
+            markerOptions.title(markerTitle);
+            markerOptions.snippet(markerSnippet);
+            markerOptions.draggable(true);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            currentMarker = this.googleMap.addMarker(markerOptions);
+            googleMap.animateCamera(CameraUpdateFactory.newLatLng(currentLocation));
+         //   this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+            return;
+        }
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(DEFAULT_LOCATION);
+        markerOptions.title(markerTitle);
+        markerOptions.snippet(markerSnippet);
+        markerOptions.draggable(true);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        currentMarker = this.googleMap.addMarker(markerOptions);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLng(DEFAULT_LOCATION));
+      //  this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(DEFAULT_LOCATION));
+    }
+
 }

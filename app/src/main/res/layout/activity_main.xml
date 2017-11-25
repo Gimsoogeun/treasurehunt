@@ -43,15 +43,18 @@
 
     </LinearLayout>
     <LinearLayout
+
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
+
                 android:textColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -68,40 +71,34 @@
 
             </ListView>
         </LinearLayout>
-
         <Button
+            android:layout_gravity="right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="pushButton"
-            android:text="글 작성" />
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            android:text="땅 파기" />
+        <Button
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="pushButton"
+            android:text="보물 묻기" />
+      <!--  <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.project.six.treasurehunt.MapsActivity" />
-        <LinearLayout
-            android:orientation="vertical"
+            tools:context="com.project.six.treasurehunt.MapsActivity" /> -->
+        <fragment android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:textColor="@android:color/white"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/holo_blue_dark"
-                android:text="신규 게시글"
-                android:textAlignment="center"
-                android:textSize="18sp" />
-
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </ListView>
-        </LinearLayout>
+            android:layout_height="match_parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textview" />
     </LinearLayout>
 
 

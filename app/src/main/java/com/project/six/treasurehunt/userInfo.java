@@ -8,8 +8,8 @@ public class userInfo {
     public String uid;
     public String userName;
     public String email;
-    public int FindTreasure;
-    public int HideTreasure;
+    public long FindTreasure;
+    public long HideTreasure;
     public userInfo(String userName,String email){
         this.userName=userName;
         this.email=email;

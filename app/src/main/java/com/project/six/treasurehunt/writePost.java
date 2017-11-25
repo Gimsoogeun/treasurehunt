@@ -25,6 +25,9 @@ public class writePost extends AppCompatActivity {
     public EditText context1;
     public EditText context2;
 
+    double latitude;
+    double longitude;
+
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ValueEventListener mValueEventListener;
@@ -32,6 +35,9 @@ public class writePost extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_post);
+        Intent intent=getIntent();
+        latitude=intent.getDoubleExtra("latitude",-9999);
+        longitude=intent.getDoubleExtra("longitude",-9999);
         titleET=(EditText)findViewById(R.id.titleET);
         context1=(EditText)findViewById(R.id.context1ET);
         context2=(EditText)findViewById(R.id.context2ET);
@@ -68,7 +74,8 @@ public class writePost extends AppCompatActivity {
             post.context2 = context2.getText().toString();
             post.writerName = user.getDisplayName();
             post.writerUID = user.getUid();
-
+            post.latitude=latitude;
+            post.longitude=longitude;
             mDatabaseReference.push().setValue(post, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
