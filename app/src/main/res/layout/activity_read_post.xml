@@ -11,24 +11,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@color/colorPrimaryDark"
-        android:text="button1"
-        android:textColor="@android:color/white" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark"
+            android:text="현재 정보"
+            android:onClick="currentInfo"
+            android:textColor="@android:color/white" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="?android:attr/colorPrimaryDark"
-            android:text="button2"
-
+            android:text="게시글 보기"
+            android:onClick="pushPostViewButton"
             android:textColor="@android:color/white"
             tools:background="@color/colorPrimarysmoothDark" />
         <Button
-            android:text="button3"
+            android:text="내 정보"
             android:background="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,7 +85,7 @@
 
                 <Button
                     android:layout_width="wrap_content"
-
+                    android:onClick="clickRemove"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="삭제"
@@ -103,6 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="닫기"
+                    android:onClick="clickClose"
                     android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>

@@ -25,7 +25,6 @@ public class main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setTheme(android.R.style.Theme_NoTitleBar);
 
        // mEditText=(EditText)findViewById(R.id.testInput);
         initFirebaseDatabase();
@@ -70,6 +69,10 @@ public class main extends AppCompatActivity {
         */
         Intent intent=new Intent(this, postsActivity.class);
         startActivity(intent);
+
     }
 
+    public void currentInfo(View view){
+
+    }
 }

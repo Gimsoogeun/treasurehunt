@@ -56,28 +56,28 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     //Sign in button
     SignInButton signInButton; //로그인 버튼
     Button signOutButton;  //로그아웃 버튼
-    TextView mTxtProfileInfo;     //사용자 정보표시
+    TextView mTxtProfileInfo;//사용자 정보표시
+    TextView mTxtProfileEmail;//사용자 이메일
     private ImageView mImgProfile; //사용자 프로필이미지
 
     private String userName; //사용자 이름
+    private String userEmail; //사용자 이메일
 
-    TextView statusTextView;
+
 
     private static final int RC_SIGN_IN=9001;
 
-    TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loginactivity);
-
         //초기화함
         initViews();
         initFirebaseDatabase();
         initFirebaseAuth();
 
         Toast.makeText(this, "commit test", Toast.LENGTH_SHORT).show();
-        textView=(TextView) findViewById(R.id.textview);
+
     }
 
     //뷰를 초기화함
@@ -89,7 +89,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
 
         mTxtProfileInfo=(TextView) findViewById(R.id.txt_profile_info);
         mImgProfile=(ImageView)findViewById(R.id.img_profile);
-
+        mTxtProfileEmail=(TextView) findViewById(R.id.txt_profile_email);
     }
     //firebase databse 를 초기화함
     private void initFirebaseDatabase(){
@@ -133,6 +133,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             signOutButton.setVisibility(View.GONE);
             mTxtProfileInfo.setVisibility(View.GONE);
             mImgProfile.setVisibility(View.GONE);
+            mTxtProfileEmail.setVisibility(View.GONE);
             //추가로 로그인 안됬을시 변경할것들 추가
         }else{
             //로그인이 되어있다!!!
@@ -140,9 +141,13 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             signOutButton.setVisibility(View.VISIBLE);
             mTxtProfileInfo.setVisibility(View.VISIBLE);
             mImgProfile.setVisibility(View.VISIBLE);
+            mTxtProfileEmail.setVisibility(View.VISIBLE);
 
             userName=user.getDisplayName();
             mTxtProfileInfo.setText(userName);
+            userEmail=user.getEmail();
+            mTxtProfileEmail.setText(userEmail);
+
             Picasso.with(this).load(user.getPhotoUrl()).into(mImgProfile);
         }
     }
@@ -225,6 +230,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
                                 writeNewUser(user.getUid(),user.getDisplayName(),user.getEmail());
                                 Toast.makeText(loginActivity.this, user.getDisplayName()+"님 환영합니다.",
                                         Toast.LENGTH_SHORT).show();
+                                NextActivity(null);
                             }
                         }
                     });
@@ -234,7 +240,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
 
     }
 
-    public void testNextActivity(View view){
+    public void NextActivity(View view){
         Intent intent=new Intent(this, main.class);
         startActivity(intent);
     }
@@ -244,5 +250,9 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         mDatabaseReference.child("users").child(userId).child("userName").setValue(name);
         mDatabaseReference.child("users").child(userId).child("email").setValue(email);
 
+    }
+    public void gomap(View view){
+        Intent intent=new Intent(this, MapsActivity.class);
+        startActivity(intent);
     }
 }

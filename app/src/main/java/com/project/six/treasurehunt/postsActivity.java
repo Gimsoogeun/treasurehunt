@@ -96,7 +96,6 @@ public class postsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                postContext post =mAdapter.getItem(i);
-               Toast.makeText(getApplicationContext(),post.firebaseKey+"선택됨",Toast.LENGTH_SHORT).show();
                selectPost(post);
             }
         });
@@ -111,6 +110,13 @@ public class postsActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
+    public void currentInfo(View view){
+        Intent intent=new Intent(this, main.class);
+        startActivity(intent);
+        finish();
+    }
+    public void pushPostViewButton(View view) {
 
+    }
 
 }

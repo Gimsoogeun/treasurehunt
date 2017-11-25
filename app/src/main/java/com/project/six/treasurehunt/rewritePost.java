@@ -1,6 +1,8 @@
 package com.project.six.treasurehunt;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -64,32 +66,53 @@ public class rewritePost extends AppCompatActivity {
 
     }
     public void onClickReWrite(View view){
-        if(titleEdittext.getText().toString().equals("") ){
-            Toast.makeText(this,"제목을 입력해 주세요.",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if(context1Edittext.getText().toString().equals("") ){
-            Toast.makeText(this,"내용 입력해 주세요.",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if(context2Edittext.getText().toString().equals("") ){
-            Toast.makeText(this,"보상 내용 입력해 주세요.",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        post.title=titleEdittext.getText().toString();
-        post.context1=context1Edittext.getText().toString();
-        post.context2=context2Edittext.getText().toString();
-        mDatabaseReference.setValue(post,new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    Toast.makeText(getApplicationContext(), "글 수정에 실패했습니다.", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "글 수정에 성공했습니다.", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
+        NetworkInfo mNetworkState=getNetworkInfo();
+        if( mNetworkState!=null && mNetworkState.isConnected()) {
+            if (titleEdittext.getText().toString().equals("")) {
+                Toast.makeText(this, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
+            if (context1Edittext.getText().toString().equals("")) {
+                Toast.makeText(this, "내용 입력해 주세요.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (context2Edittext.getText().toString().equals("")) {
+                Toast.makeText(this, "보상 내용 입력해 주세요.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            post.title = titleEdittext.getText().toString();
+            post.context1 = context1Edittext.getText().toString();
+            post.context2 = context2Edittext.getText().toString();
+            mDatabaseReference.setValue(post, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError != null) {
+                        Toast.makeText(getApplicationContext(), "글 수정에 실패했습니다.", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "글 수정에 성공했습니다.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }
+            });
+        }else{
+            Toast.makeText(this, "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public void currentInfo(View view){
+        Intent intent=new Intent(this, main.class);
+        startActivity(intent);
+        finish();
+    }
+    public void pushPostViewButton(View view) {
+        Intent intent=new Intent(this, postsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private NetworkInfo getNetworkInfo(){
+        ConnectivityManager connectivityManager=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo=connectivityManager.getActiveNetworkInfo();
+        return networkInfo;
     }
 }
