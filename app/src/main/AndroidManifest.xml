@@ -20,7 +20,9 @@
         </activity>
         <activity android:name=".main" />
         <activity android:name=".writePost" />
-        <activity android:name=".postsActivity"></activity>
+        <activity android:name=".postsActivity" />
+        <activity android:name=".readPost" />
+        <activity android:name=".rewritePost"></activity>
     </application>
 
 </manifest>

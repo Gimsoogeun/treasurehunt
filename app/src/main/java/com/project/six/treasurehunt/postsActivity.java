@@ -1,10 +1,14 @@
 package com.project.six.treasurehunt;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -13,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
 
 public class postsActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
@@ -75,7 +81,25 @@ public class postsActivity extends AppCompatActivity {
         mListView=(ListView)findViewById(R.id.postlist);
         mAdapter=new postAdapter(this,0);
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+               postContext post =mAdapter.getItem(i);
+               Toast.makeText(getApplicationContext(),post.firebaseKey+"선택됨",Toast.LENGTH_SHORT).show();
+               selectPost(post);
+            }
+        });
+    }
 
+    public void selectPost(postContext post){
+        Intent intent=new Intent(this, readPost.class);
+        intent.putExtra("title",post.title);
+        intent.putExtra("context1",post.context1);
+        intent.putExtra("firebaseKey",post.firebaseKey);
+        intent.putExtra("writerUID",post.writerUID);
+        startActivity(intent);
 
     }
+
+
 }
