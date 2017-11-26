@@ -84,8 +84,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         initFirebaseDatabase();
         initFirebaseAuth();
         permissionCheck();
-        Toast.makeText(this, "commit test", Toast.LENGTH_SHORT).show();
-
     }
 
     //뷰를 초기화함

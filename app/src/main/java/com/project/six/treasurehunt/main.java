@@ -44,6 +44,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.GregorianCalendar;
+
 public class main extends FragmentActivity implements OnMapReadyCallback {
     //초기 마커 위치입니다. 지도에 표기됨.
     private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
@@ -53,7 +55,9 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ValueEventListener mValueEventListener;
-
+    public GregorianCalendar cal;
+    long currentTimeTotal;
+    long currentDateTotal;
 
     private Marker currentMarker=null;
     private GoogleMap googleMap;
@@ -64,6 +68,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     LocationCallback mLocationCallback;
     Location mCurrentLocation;
     LocationRequest mLocationRequest;
+    Query query;
 
     public  EditText mEditText;
 
@@ -146,23 +151,46 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     }
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference();
+        mDatabaseReference = mFirebaseDatabase.getReference("posts");
         mauth=FirebaseAuth.getInstance();
         FirebaseUser user=mauth.getCurrentUser();
         userName=user.getDisplayName();
 
+        query=mDatabaseReference.orderByChild("isfinded").equalTo(false);
         mValueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                post=dataSnapshot.getValue(postContext.class);
-                Toast.makeText(getApplicationContext(),post.title+"불려짐",Toast.LENGTH_SHORT).show();
-            }
+                currentDateTotal=(cal.get(java.util.Calendar.YEAR)*10000)+(cal.get(java.util.Calendar.MONTH)*100)+(cal.get(java.util.Calendar.DAY_OF_MONTH));
+                currentTimeTotal=(cal.get(java.util.Calendar.HOUR)*100)+cal.get(java.util.Calendar.MINUTE);
+                if (dataSnapshot.exists()) {
+                    for(DataSnapshot dataSnapshots : dataSnapshot.getChildren()) {
+                        post = dataSnapshots.getValue(postContext.class);
+                        post.firebaseKey=dataSnapshots.getKey();
+                      //  Toast.makeText(getApplicationContext(),"이거 불린다"+post.title,Toast.LENGTH_SHORT).show();
+                        //시간과 공간이 적합한 녀석이 발견됬다면!
+                        if( (longitude-0.00007 <= post.longitude) && (longitude+0.00007 >= post.longitude )&&
+                                (latitude-0.00007 <=post.latitude )&& (latitude+0.00007>= post.latitude) &&
+                                ( currentDateTotal>=post.startDate) && (currentDateTotal<= post.endDate) &&
+                                (currentTimeTotal >= post.starttime )&& (currentTimeTotal <= post.endTime)){
+                            Toast.makeText(getApplicationContext(),"이거 불린다"+post.title,Toast.LENGTH_SHORT).show();
 
+                            getReword(post.firebaseKey);
+                            break;
+                        }
+                    }
+                }
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         };
+
+    }
+    public void getReword(String key){
+        Intent intent=new Intent(this,findTreasureActivity.class);
+        intent.putExtra("firebaseKey",key);
+        startActivity(intent);
     }
     protected void onResume(){
         super.onResume();
@@ -176,12 +204,16 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     private void initView(){
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        cal=new GregorianCalendar();
 
     }
     public void clickDigButton(View view){
-
+        query.addListenerForSingleValueEvent(mValueEventListener);
     }
-
+    public void myInfoButton(View view){
+        Intent intent=new Intent(this, findPostsActivity.class);
+        startActivity(intent);
+    }
     public void pushButton(View view) {
 
         Intent intent=new Intent(this, writePost.class);
@@ -215,7 +247,6 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         mapSetting.setZoomControlsEnabled(true);
         googleMap.setMinZoomPreference(14);
         //카메라를 서울 위치로 옮긴다.
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(seoul));
     }
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
         if ( currentMarker != null ){

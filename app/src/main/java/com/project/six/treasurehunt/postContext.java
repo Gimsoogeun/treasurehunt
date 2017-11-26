@@ -16,7 +16,7 @@ public class postContext {
 
     public String writerName;
     public String writerUID;
-
+    public String finderUID;
     public String firebaseKey;
 
     public double altitude; //고도

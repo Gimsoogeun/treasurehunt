@@ -106,4 +106,9 @@ public class readPost extends AppCompatActivity {
         NetworkInfo networkInfo=connectivityManager.getActiveNetworkInfo();
         return networkInfo;
     }
+    public void myInfoButton(View view){
+        Intent intent=new Intent(this, findPostsActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

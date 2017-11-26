@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.project.six.treasurehunt.postsActivity">
+    tools:context="com.project.six.treasurehunt.findPostsActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +32,6 @@
             tools:background="@color/colorPrimarysmoothDark" />
         <Button
             android:text="내가 찾은 보물"
-            android:onClick="myInfoButton"
             android:background="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

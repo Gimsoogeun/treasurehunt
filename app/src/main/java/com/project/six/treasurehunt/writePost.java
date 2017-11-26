@@ -246,7 +246,11 @@ public class writePost extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
+    public void myInfoButton(View view){
+        Intent intent=new Intent(this, findPostsActivity.class);
+        startActivity(intent);
+        finish();
+    }
     private NetworkInfo getNetworkInfo(){
         ConnectivityManager connectivityManager=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=connectivityManager.getActiveNetworkInfo();
