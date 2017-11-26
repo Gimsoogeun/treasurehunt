@@ -47,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/holo_blue_dark"
-        android:text="게시글"
+        android:text="보물지도"
         android:textAlignment="center"
         android:textSize="18sp" />
     <ListView

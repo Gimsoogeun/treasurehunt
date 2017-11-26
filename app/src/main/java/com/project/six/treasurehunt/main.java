@@ -44,6 +44,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class main extends FragmentActivity implements OnMapReadyCallback {
@@ -161,21 +162,25 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 currentDateTotal=(cal.get(java.util.Calendar.YEAR)*10000)+(cal.get(java.util.Calendar.MONTH)*100)+(cal.get(java.util.Calendar.DAY_OF_MONTH));
-                currentTimeTotal=(cal.get(java.util.Calendar.HOUR)*100)+cal.get(java.util.Calendar.MINUTE);
+                currentTimeTotal=(cal.get(Calendar.HOUR_OF_DAY)*100)+cal.get(java.util.Calendar.MINUTE);
+                long temptTime=(currentDateTotal*10000) + (currentTimeTotal);
+                long startTimer;
+                long endTimer;
                 if (dataSnapshot.exists()) {
                     for(DataSnapshot dataSnapshots : dataSnapshot.getChildren()) {
                         post = dataSnapshots.getValue(postContext.class);
                         post.firebaseKey=dataSnapshots.getKey();
-                      //  Toast.makeText(getApplicationContext(),"이거 불린다"+post.title,Toast.LENGTH_SHORT).show();
+                        startTimer=(post.startDate*10000)+post.starttime;
+                        endTimer=(post.endDate*10000)+post.endTime;
+                        Toast.makeText(getApplicationContext(),"현재 시간"+temptTime+"시작시간"+startTimer +"끝 시간"+endTimer,Toast.LENGTH_SHORT).show();
                         //시간과 공간이 적합한 녀석이 발견됬다면!
-                        if( (longitude-0.00007 <= post.longitude) && (longitude+0.00007 >= post.longitude )&&
-                                (latitude-0.00007 <=post.latitude )&& (latitude+0.00007>= post.latitude) &&
-                                ( currentDateTotal>=post.startDate) && (currentDateTotal<= post.endDate) &&
-                                (currentTimeTotal >= post.starttime )&& (currentTimeTotal <= post.endTime)){
-                            Toast.makeText(getApplicationContext(),"이거 불린다"+post.title,Toast.LENGTH_SHORT).show();
-
-                            getReword(post.firebaseKey);
-                            break;
+                        if( ((longitude-0.00007) <= post.longitude) && ((longitude+0.00007) >= post.longitude )) {
+                            if(((latitude-0.00007) <= post.latitude) && ((latitude+0.00007) >= post.latitude )) {
+                                if( (startTimer <= temptTime) && ( temptTime <= endTimer) ) {
+                                    getReword(post.firebaseKey);
+                                    break;
+                                }
+                            }
                         }
                     }
                 }

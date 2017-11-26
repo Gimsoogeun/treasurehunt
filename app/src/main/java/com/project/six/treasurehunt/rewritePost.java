@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class rewritePost extends AppCompatActivity {
@@ -175,7 +176,7 @@ public class rewritePost extends AppCompatActivity {
             endTimeTotal=(eHour*100) + (eMinute);
 
             currentDateTotal=(cal.get(java.util.Calendar.YEAR)*10000)+(cal.get(java.util.Calendar.MONTH)*100)+(cal.get(java.util.Calendar.DAY_OF_MONTH));
-            currentTimeTotal=(cal.get(java.util.Calendar.HOUR)*100)+cal.get(java.util.Calendar.MINUTE);
+            currentTimeTotal=(cal.get(Calendar.HOUR_OF_DAY)*100)+cal.get(java.util.Calendar.MINUTE);
             if(startDateTotal == currentDateTotal){
                 if(startTimeTotal< currentTimeTotal){
                     Toast.makeText(this, "시작시간이 현재 시간보다 과거입니다.", Toast.LENGTH_SHORT).show();
