@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.project.six.treasurehunt.readPost">
+    tools:context="com.project.six.treasurehunt.findTreasureActivity">
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -74,33 +74,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="top"
+                android:scrollbars="vertical" />
 
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/readPostContext2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top"
                 android:scrollbars="vertical" />
 
             <LinearLayout
                 android:layout_gravity="bottom"
-                android:layout_weight="9"
+                android:layout_weight="1.7"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:onClick="clickRemove"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="삭제"
-                    android:textColor="@android:color/white" />
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="수정"
-                    android:textColor="@android:color/white"
-                    android:onClick="onRewrite"/>
-
-                <Button
+                    android:layout_gravity="bottom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -112,5 +105,4 @@
 
 
     </LinearLayout>
-
 </LinearLayout>

@@ -41,6 +41,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class main extends FragmentActivity implements OnMapReadyCallback {
@@ -65,6 +66,8 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     LocationRequest mLocationRequest;
 
     public  EditText mEditText;
+
+    postContext post;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,10 +146,23 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     }
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference("message");
+        mDatabaseReference = mFirebaseDatabase.getReference();
         mauth=FirebaseAuth.getInstance();
         FirebaseUser user=mauth.getCurrentUser();
         userName=user.getDisplayName();
+
+        mValueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                post=dataSnapshot.getValue(postContext.class);
+                Toast.makeText(getApplicationContext(),post.title+"불려짐",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
     protected void onResume(){
         super.onResume();
@@ -160,6 +176,9 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     private void initView(){
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+    }
+    public void clickDigButton(View view){
 
     }
 

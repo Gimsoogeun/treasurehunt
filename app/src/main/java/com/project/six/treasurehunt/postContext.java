@@ -9,8 +9,10 @@ public class postContext {
     public String context1;
     public String context2;
 
-    public long time;
-
+    public long starttime;
+    public long startDate;
+    public long endTime;
+    public long endDate;
 
     public String writerName;
     public String writerUID;

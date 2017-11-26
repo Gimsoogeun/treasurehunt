@@ -75,7 +75,7 @@
             android:layout_gravity="right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="pushButton"
+            android:onClick="clickDigButton"
             android:text="땅 파기" />
         <Button
             android:layout_gravity="right"
