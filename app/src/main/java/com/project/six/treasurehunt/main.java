@@ -172,11 +172,11 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
                         post.firebaseKey=dataSnapshots.getKey();
                         startTimer=(post.startDate*10000)+post.starttime;
                         endTimer=(post.endDate*10000)+post.endTime;
-                        Toast.makeText(getApplicationContext(),"현재 시간"+temptTime+"시작시간"+startTimer +"끝 시간"+endTimer,Toast.LENGTH_SHORT).show();
                         //시간과 공간이 적합한 녀석이 발견됬다면!
                         if( ((longitude-0.00007) <= post.longitude) && ((longitude+0.00007) >= post.longitude )) {
                             if(((latitude-0.00007) <= post.latitude) && ((latitude+0.00007) >= post.latitude )) {
                                 if( (startTimer <= temptTime) && ( temptTime <= endTimer) ) {
+                                    Toast.makeText(getApplicationContext(),"머지"+endTimer,Toast.LENGTH_SHORT).show();
                                     getReword(post.firebaseKey);
                                     break;
                                 }
@@ -221,7 +221,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     }
     public void pushButton(View view) {
 
-        Intent intent=new Intent(this, writePost.class);
+        Intent intent=new Intent(this, writePostNew.class);
         intent.putExtra("latitude",latitude);
         intent.putExtra("longitude",longitude);
 

@@ -64,6 +64,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     //Sign in button
     SignInButton signInButton; //로그인 버튼
     Button signOutButton;  //로그아웃 버튼
+    Button GoTreasureHunt;
     TextView mTxtProfileInfo;//사용자 정보표시
     TextView mTxtProfileEmail;//사용자 이메일
     private ImageView mImgProfile; //사용자 프로필이미지
@@ -92,7 +93,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         signOutButton=(Button)findViewById(R.id.sign_out_button);
         signInButton.setOnClickListener(this);
         signOutButton.setOnClickListener(this);
-
+        GoTreasureHunt=(Button)findViewById(R.id.goTreasure);
         mTxtProfileInfo=(TextView) findViewById(R.id.txt_profile_info);
         mImgProfile=(ImageView)findViewById(R.id.img_profile);
         mTxtProfileEmail=(TextView) findViewById(R.id.txt_profile_email);
@@ -140,6 +141,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             mTxtProfileInfo.setVisibility(View.GONE);
             mImgProfile.setVisibility(View.GONE);
             mTxtProfileEmail.setVisibility(View.GONE);
+            GoTreasureHunt.setVisibility(View.GONE);
             //추가로 로그인 안됬을시 변경할것들 추가
         }else{
             //로그인이 되어있다!!!
@@ -148,6 +150,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             mTxtProfileInfo.setVisibility(View.VISIBLE);
             mImgProfile.setVisibility(View.VISIBLE);
             mTxtProfileEmail.setVisibility(View.VISIBLE);
+            GoTreasureHunt.setVisibility(View.VISIBLE);
 
             userName=user.getDisplayName();
             mTxtProfileInfo.setText(userName);
@@ -299,5 +302,9 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             return;
         }
 
+    }
+    public void testupload(View v){
+        Intent intent=new Intent(this,writePostNew.class);
+        startActivity(intent);
     }
 }

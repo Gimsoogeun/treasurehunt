@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 public class findTreasureActivity extends AppCompatActivity {
 
@@ -21,6 +23,8 @@ public class findTreasureActivity extends AppCompatActivity {
     TextView textViewtitle;
     TextView textViewcontext1;
     TextView textViewcontext2;
+    ImageView desImage, rewordImage;
+
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -58,6 +62,8 @@ public class findTreasureActivity extends AppCompatActivity {
 
     }
     private void initView(){
+        desImage=(ImageView)findViewById(R.id.desImage);
+        rewordImage=(ImageView)findViewById(R.id.rewordImage);
         textViewtitle=(TextView)findViewById(R.id.FindedPostTitle);
         textViewcontext1=(TextView)findViewById(R.id.FindedPostContext1);
         textViewcontext2=(TextView)findViewById(R.id.FindedPostContext2);
@@ -65,6 +71,8 @@ public class findTreasureActivity extends AppCompatActivity {
         textViewtitle.setText(post.title);
         textViewcontext1.setText(post.context1);
         textViewcontext2.setText(post.context2);
+        Picasso.with(this).load(post.imageURL1).into(desImage);
+        Picasso.with(this).load(post.imageURL2).into(rewordImage);
 
     }
     public void clickClose(View v){

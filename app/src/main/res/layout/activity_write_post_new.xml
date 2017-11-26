@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.project.six.treasurehunt.rewritePost">
+    tools:context="com.project.six.treasurehunt.writePostNew">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,48 +56,50 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1.2"
-                android:orientation="vertical">
+                android:layout_weight="1">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="제목:"
-                        android:textAlignment="center"
-                        android:textSize="20sp" />
-
-                    <EditText
-                        android:id="@+id/RWtitleET"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="제목을 입력하세요"
-                        android:lines="1"
-                        android:maxLength="70"
-                        android:textSize="18sp" />
-                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="제목:"
+                    android:textAlignment="center"
+                    android:textSize="20sp" />
 
                 <EditText
-                    android:minHeight="250sp"
-                    android:id="@+id/RWcontext1ET"
+                    android:id="@+id/titleET"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="제목을 입력하세요"
+                    android:lines="1"
+                    android:maxLength="70"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/context1ET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:gravity="top"
+                    android:minHeight="200sp"
                     android:hint="내용을 입력하세요." />
+
                 <ImageView
                     android:id="@+id/desImage"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent" />
 
                 <Button
-                    android:id="@+id/chooseButton1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/ChooseButton1"
                     android:layout_gravity="center"
                     android:onClick="ChooseButton1Click"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="이미지 추가" />
 
                 <LinearLayout
@@ -183,34 +185,37 @@
                     </LinearLayout>
 
                     <EditText
-                        android:minHeight="250sp"
-                        android:id="@+id/RWcontext2ET"
+                        android:id="@+id/context2ET"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="top"
+                        android:minHeight="200sp"
                         android:hint="내용을 입력하세요." />
+
                     <ImageView
                         android:id="@+id/rewordImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-
                     <Button
-                        android:id="@+id/chooseButton2"
+                        android:id="@+id/ChooseButton2"
+                        android:onClick="ChooseButton2Click"
+                        android:layout_gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:onClick="ChooseButton2Click"
                         android:text="이미지 추가" />
 
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimaryDark"
-                        android:onClick="onClickReWrite"
-                        android:text="수정"
+                        android:onClick="onClickWrite"
+                        android:text="작성"
                         android:textColor="@android:color/white" />
                 </LinearLayout>
+
+
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

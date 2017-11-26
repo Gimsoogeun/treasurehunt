@@ -64,52 +64,63 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_weight="1"
-                android:id="@+id/readPostContext"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="top"
-
-                android:scrollbars="vertical" />
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_gravity="bottom"
-                android:layout_weight="9"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:onClick="clickRemove"
-                    android:layout_height="wrap_content"
+                <TextView
+                    android:minHeight="450sp"
+                    android:id="@+id/readPostContext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="삭제"
-                    android:textColor="@android:color/white" />
+                    android:gravity="top"
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="수정"
-                    android:textColor="@android:color/white"
-                    android:onClick="onRewrite"/>
+                    android:scrollbars="vertical" />
 
-                <Button
+                <ImageView
+                    android:id="@+id/descriptImage"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="닫기"
-                    android:onClick="clickClose"
-                    android:textColor="@android:color/white" />
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="9"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="clickRemove"
+                        android:text="삭제"
+                        android:textColor="@android:color/white" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="onRewrite"
+                        android:text="수정"
+                        android:textColor="@android:color/white" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:onClick="clickClose"
+                        android:text="닫기"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+        </ScrollView>
 
 
     </LinearLayout>

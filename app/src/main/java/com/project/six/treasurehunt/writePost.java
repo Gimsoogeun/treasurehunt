@@ -29,6 +29,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.GregorianCalendar;
 
 public class writePost extends AppCompatActivity {
+
+    
+
+
     public int sYear,sMonth,sDay,sHour,sMinute;
 
     public int eYear,eMonth,eDay,eHour,eMinute;

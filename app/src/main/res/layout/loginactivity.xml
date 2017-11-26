@@ -27,9 +27,9 @@
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/button3"
+        android:visibility="gone"
+        android:id="@+id/goTreasure"
         android:layout_gravity="center"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="NextActivity"
@@ -80,7 +80,6 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-
         <Button
             android:id="@+id/sign_out_button"
             android:layout_width="wrap_content"

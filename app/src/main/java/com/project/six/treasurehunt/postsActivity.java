@@ -107,6 +107,7 @@ public class postsActivity extends AppCompatActivity {
         intent.putExtra("context1",post.context1);
         intent.putExtra("firebaseKey",post.firebaseKey);
         intent.putExtra("writerUID",post.writerUID);
+        intent.putExtra("imageURL1",post.imageURL1);
         startActivity(intent);
 
     }

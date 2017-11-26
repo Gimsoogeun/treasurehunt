@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,12 +18,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 public class readPost extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
 
-
+    ImageView descriptImage;
     postContext post;
     TextView textViewtitle;
     TextView textViewcontext;
@@ -38,12 +42,13 @@ public class readPost extends AppCompatActivity {
         post.context1=intent.getStringExtra("context1");
         post.firebaseKey=intent.getStringExtra("firebaseKey");
         post.writerUID=intent.getStringExtra("writerUID");
+        post.imageURL1=intent.getStringExtra("imageURL1");
         textViewtitle=(TextView)findViewById(R.id.readPostTitle);
         textViewcontext=(TextView)findViewById(R.id.readPostContext);
-
+        descriptImage=(ImageView)findViewById(R.id.descriptImage);
         textViewtitle.setText(post.title);
         textViewcontext.setText(post.context1);
-
+        Picasso.with(this).load(post.imageURL1).into(descriptImage);
         mAuth=FirebaseAuth.getInstance();
         initFirebaseDatabase();
     }

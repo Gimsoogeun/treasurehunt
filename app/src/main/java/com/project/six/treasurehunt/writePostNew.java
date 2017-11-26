@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,49 +26,54 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class rewritePost extends AppCompatActivity {
+public class writePostNew extends AppCompatActivity {
+
     //이미지 업로드를 위한 경로 storage
     String Storage_Path="All_Image_Uploads/";
+
     Button ChooseButton1, ChooseButton2;
     // Creating ImageView.
     ImageView SelectImage1, SelectImage2;
     // Creating URI. 업로드할 파일의 경로를 얻습니다.
     Uri FilePathUri1;
     Uri FilePathUri2;
+
     //데이터베이스에 저장될 url 입니다.
     String image1URL;
     String image2URL;
+
+
     boolean isEnded1=false;
     boolean isEnded2=false;
     boolean imGoingtoDo=false;
+
+
+    postContext post;
     //이미지를 업로드하기 위해 firestorage사용
     StorageReference storageReference;
-    //이미지 업로드중이라는것을 보여주는 창
-    ProgressDialog progressDialog ;
-    ProgressDialog progressDialog2;
     // Image request code for onActivityResult() .
     int Image_Request_Code1 = 7;
     int Image_Request_Code2 = 8;
+    //이미지 업로드중이라는것을 보여주는 창
+    ProgressDialog progressDialog ;
+    ProgressDialog progressDialog2;
 
-
+    //시간을 계산하기위함.
     public int sYear,sMonth,sDay,sHour,sMinute;
-
     public int eYear,eMonth,eDay,eHour,eMinute;
 
     long startDateTotal;
@@ -80,22 +86,10 @@ public class rewritePost extends AppCompatActivity {
 
     public GregorianCalendar cal;
 
-
-    String postfirebaseKey;
-
-
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
-    private ValueEventListener mValueEventListener;
-
-    postContext post;
     public TextView mStartDate;
     public TextView mStartTime;
     public TextView mEndDate;
     public TextView mEndTime;
-    EditText titleEdittext;
-    EditText context1Edittext;
-    EditText context2Edittext;
     //시작시간을 정할때 쓰는 리스너
     DatePickerDialog.OnDateSetListener sDateListener= new  DatePickerDialog.OnDateSetListener(){
         @Override
@@ -132,56 +126,61 @@ public class rewritePost extends AppCompatActivity {
             endTimeDateUpdate();
         }
     };
-    void startTimeDateUpdate(){
 
-        mStartDate.setText(String.format("%d/%d/%d", sYear, sMonth + 1, sDay));
-        mStartTime.setText(String.format("%d:%d", sHour, sMinute));
+    public EditText titleET;
+    public EditText context1;
+    public EditText context2;
 
-    }
-    void endTimeDateUpdate(){
+    double latitude;
+    double longitude;
 
-        mEndDate.setText(String.format("%d/%d/%d", eYear, eMonth + 1, eDay));
-        mEndTime.setText(String.format("%d:%d", eHour, eMinute));
-
-    }
-    public void onClickStartTime(View view){
-        new DatePickerDialog(rewritePost.this, sDateListener, sYear,
-                sMonth, sDay).show();
-        new TimePickerDialog(rewritePost.this,sTimeListener,sHour,sMinute,true).show();
-
-
-    }
-    public void onClickEndTime(View view){
-        new DatePickerDialog(rewritePost.this, eDateListener, eYear,
-                eMonth, eDay).show();
-        new TimePickerDialog(rewritePost.this,eTimeListener,eHour,eMinute,true).show();
-
-    }
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
+    private ValueEventListener mValueEventListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rewrite_post);
+        setContentView(R.layout.activity_write_post_new);
         Intent intent=getIntent();
-        postfirebaseKey=intent.getStringExtra("firebaseKey");
+        latitude=intent.getDoubleExtra("latitude",-9999);
+        longitude=intent.getDoubleExtra("longitude",-9999);
+        post = new postContext();
         initView();
         initFirebaseDatabase();
+
+
     }
     public void initView(){
-        titleEdittext=(EditText)findViewById(R.id.RWtitleET);
-        context1Edittext=(EditText)findViewById(R.id.RWcontext1ET);
-        context2Edittext=(EditText)findViewById(R.id.RWcontext2ET);
-        mStartDate=(TextView)findViewById(R.id.startDate);
-        mStartTime=(TextView)findViewById(R.id.startTime);
-        mEndDate=(TextView)findViewById(R.id.endDate);
-        mEndTime=(TextView)findViewById(R.id.endTime);
+        //이미지 추가 뷰
         SelectImage1=(ImageView)findViewById(R.id.desImage);
         SelectImage2=(ImageView)findViewById(R.id.rewordImage);
         progressDialog=new ProgressDialog(this);
         progressDialog2=new ProgressDialog(this);
-        ChooseButton1=(Button)findViewById(R.id.chooseButton1);
-        ChooseButton2=(Button)findViewById(R.id.chooseButton2);
 
+        ChooseButton1=(Button)findViewById(R.id.ChooseButton1);
+        ChooseButton2=(Button)findViewById(R.id.ChooseButton2);
+
+        titleET=(EditText)findViewById(R.id.titleET);
+        context1=(EditText)findViewById(R.id.context1ET);
+        context2=(EditText)findViewById(R.id.context2ET);
+        mStartDate=(TextView)findViewById(R.id.startDate);
+        mStartTime=(TextView)findViewById(R.id.startTime);
+        mEndDate=(TextView)findViewById(R.id.endDate);
+        mEndTime=(TextView)findViewById(R.id.endTime);
         cal=new GregorianCalendar();
+        sYear=cal.get(java.util.Calendar.YEAR);
+        sMonth=cal.get(java.util.Calendar.MONTH);
+        sDay=cal.get(java.util.Calendar.DAY_OF_MONTH);
+        sHour=cal.get(java.util.Calendar.HOUR_OF_DAY);
+        sMinute=cal.get(java.util.Calendar.MINUTE);
+
+        eYear=cal.get(java.util.Calendar.YEAR);
+        eMonth=cal.get(java.util.Calendar.MONTH);
+        eDay=cal.get(java.util.Calendar.DAY_OF_MONTH);
+        eHour=cal.get(java.util.Calendar.HOUR_OF_DAY);
+        eMinute=cal.get(java.util.Calendar.MINUTE);
+        startTimeDateUpdate();
+        endTimeDateUpdate();
     }
     public void ChooseButton1Click(View view){
         Intent intent=new Intent();
@@ -255,44 +254,42 @@ public class rewritePost extends AppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri)) ;
 
     }
+
+    void startTimeDateUpdate(){
+
+        mStartDate.setText(String.format("%d/%d/%d", sYear, sMonth + 1, sDay));
+        mStartTime.setText(String.format("%d:%d", sHour, sMinute));
+
+    }
+    void endTimeDateUpdate(){
+
+        mEndDate.setText(String.format("%d/%d/%d", eYear, eMonth + 1, eDay));
+        mEndTime.setText(String.format("%d:%d", eHour, eMinute));
+
+    }
     private void initFirebaseDatabase(){
         storageReference= FirebaseStorage.getInstance().getReference();
         mFirebaseDatabase= FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference("posts").child(postfirebaseKey);
-        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                post=dataSnapshot.getValue(postContext.class);
-                titleEdittext.setText(post.title);
-                context1Edittext.setText(post.context1);
-                context2Edittext.setText(post.context2);
-                sHour=(int)post.starttime/100;
-                sMinute=(int)((post.starttime)-(sHour*100));
-                sYear=(int)post.startDate/10000;
-                sMonth=(int)(post.startDate-(sYear*10000))/100;
-                sDay=(int)(post.startDate-(sYear*10000)-(sMonth*100));
-                startTimeDateUpdate();
-                eHour=(int)post.endTime/100;
-                eMinute=(int)((post.endTime)-(eHour*100));
-                eYear=(int)post.endDate/10000;
-                eMonth=(int)(post.endDate-(eYear*10000))/100;
-                eDay=(int)(post.endDate-(eYear*10000)-(eMonth*100));
-                endTimeDateUpdate();
-                Picasso.with(getApplicationContext()).load(post.imageURL1).into(SelectImage1);
-                Picasso.with(getApplicationContext()).load(post.imageURL2).into(SelectImage2);
-            }
+        mDatabaseReference = mFirebaseDatabase.getReference("posts");
+    }
+    public void onClickStartTime(View view){
+        new DatePickerDialog(writePostNew.this, sDateListener, sYear,
+                sMonth, sDay).show();
+        new TimePickerDialog(writePostNew.this,sTimeListener,sHour,sMinute,true).show();
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        Query query;
 
     }
-    public void onClickReWrite(View view){
+    public void onClickEndTime(View view){
+        new DatePickerDialog(writePostNew.this, eDateListener, eYear,
+                eMonth, eDay).show();
+        new TimePickerDialog(writePostNew.this,eTimeListener,eHour,eMinute,true).show();
+
+    }
+    public void onClickWrite(View view){
+
         NetworkInfo mNetworkState=getNetworkInfo();
-        if( mNetworkState!=null && mNetworkState.isConnected()) {
+
+        if(mNetworkState!=null &&mNetworkState.isConnected()) {
             //선택시작시간이 현재시간보다 늦으면 안됨.
             startDateTotal= (sYear*10000) + (sMonth*100)+ sDay;
             endDateTotal=(eYear*10000) + (eMonth*100)+ eDay;
@@ -300,7 +297,7 @@ public class rewritePost extends AppCompatActivity {
             endTimeTotal=(eHour*100) + (eMinute);
 
             currentDateTotal=(cal.get(java.util.Calendar.YEAR)*10000)+(cal.get(java.util.Calendar.MONTH)*100)+(cal.get(java.util.Calendar.DAY_OF_MONTH));
-            currentTimeTotal=(cal.get(Calendar.HOUR_OF_DAY)*100)+cal.get(java.util.Calendar.MINUTE);
+            currentTimeTotal=(cal.get(java.util.Calendar.HOUR_OF_DAY)*100)+cal.get(java.util.Calendar.MINUTE);
             if(startDateTotal == currentDateTotal){
                 if(startTimeTotal< currentTimeTotal){
                     Toast.makeText(this, "시작시간이 현재 시간보다 과거입니다.", Toast.LENGTH_SHORT).show();
@@ -319,26 +316,33 @@ public class rewritePost extends AppCompatActivity {
                 Toast.makeText(this, "종료시간이 시작시간과 같거나 작습니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (titleEdittext.getText().toString().equals("")) {
+
+            if (titleET.getText().toString().equals("")) {
                 Toast.makeText(this, "제목을 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (context1Edittext.getText().toString().equals("")) {
+            if (context1.getText().toString().equals("")) {
                 Toast.makeText(this, "내용 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (context2Edittext.getText().toString().equals("")) {
+            if (context2.getText().toString().equals("")) {
                 Toast.makeText(this, "보상 내용 입력해 주세요.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            post.title = titleEdittext.getText().toString();
-            post.context1 = context1Edittext.getText().toString();
-            post.context2 = context2Edittext.getText().toString();
+
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            post.title = titleET.getText().toString();
+            post.context1 = context1.getText().toString();
+            post.context2 = context2.getText().toString();
+            post.writerName = user.getDisplayName();
+            post.writerUID = user.getUid();
+            post.latitude=latitude;
+            post.longitude=longitude;
             post.startDate=startDateTotal;
             post.starttime=startTimeTotal;
             post.endDate=endDateTotal;
             post.endTime=endTimeTotal;
-
 
             // Checking whether FilePathUri Is empty or not.
             if (FilePathUri1 != null) {
@@ -350,7 +354,7 @@ public class rewritePost extends AppCompatActivity {
                 // Creating second StorageReference.
                 StorageReference storageReference2nd = storageReference.child(Storage_Path + System.currentTimeMillis() + "." + GetFileExtension(FilePathUri1));
                 // Adding addOnSuccessListener to second StorageReference.
-                storageReference2nd.putFile(FilePathUri1)
+                 storageReference2nd.putFile(FilePathUri1)
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -374,7 +378,7 @@ public class rewritePost extends AppCompatActivity {
                                 // Hiding the progressDialog.
                                 progressDialog.dismiss();
                                 // Showing exception erro message.
-                                Toast.makeText(rewritePost.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(writePostNew.this, exception.getMessage(), Toast.LENGTH_LONG).show();
                                 isEnded1=true;
                                 endUpload();
 
@@ -426,7 +430,7 @@ public class rewritePost extends AppCompatActivity {
                                 // Hiding the progressDialog.
                                 progressDialog2.dismiss();
                                 // Showing exception erro message.
-                                Toast.makeText(rewritePost.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(writePostNew.this, exception.getMessage(), Toast.LENGTH_LONG).show();
                                 isEnded2=true;
                                 endUpload();
 
@@ -445,9 +449,11 @@ public class rewritePost extends AppCompatActivity {
             }
             endUpload();
         }else{
-            Toast.makeText(this, "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+
         }
     }
+
     public void endUpload(){
         if(isEnded1 && isEnded2 && !imGoingtoDo){
             pushVeluetoDatabase();
@@ -456,7 +462,7 @@ public class rewritePost extends AppCompatActivity {
 
     public void pushVeluetoDatabase(){
         imGoingtoDo=true;
-        mDatabaseReference.setValue(post, new DatabaseReference.CompletionListener() {
+        mDatabaseReference.push().setValue(post, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {

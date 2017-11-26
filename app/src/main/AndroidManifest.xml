@@ -48,7 +48,9 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".findTreasureActivity" />
-        <activity android:name=".findPostsActivity"></activity>
+        <activity android:name=".findPostsActivity" />
+        <activity android:name=".uploadImageTest" />
+        <activity android:name=".writePostNew"></activity>
     </application>
 
 </manifest>

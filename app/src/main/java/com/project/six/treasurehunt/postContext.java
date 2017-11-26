@@ -9,6 +9,9 @@ public class postContext {
     public String context1;
     public String context2;
 
+    public String imageURL1;
+    public String imageURL2;
+
     public long starttime;
     public long startDate;
     public long endTime;

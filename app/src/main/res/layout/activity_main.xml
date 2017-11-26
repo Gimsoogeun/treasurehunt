@@ -54,36 +54,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-
-                android:textColor="@android:color/white"
+            <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/holo_blue_dark"
-                android:text="신규 게시글"
-                android:textAlignment="center"
-                android:textSize="18sp" />
+                android:layout_gravity="right"
+                android:onClick="pushButton"
+                android:text="보물 묻기" />
 
-            <ListView
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-
-            </ListView>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:onClick="clickDigButton"
+                android:text="땅 파기" />
         </LinearLayout>
-        <Button
-            android:layout_gravity="right"
-            android:layout_width="wrap_content"
+
+        <TextView
+
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="clickDigButton"
-            android:text="땅 파기" />
-        <Button
-            android:layout_gravity="right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="pushButton"
-            android:text="보물 묻기" />
+            android:background="@android:color/holo_blue_dark"
+            android:text="현재 위치"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
         <fragment android:name="com.google.android.gms.maps.SupportMapFragment"
             android:id="@+id/map"
