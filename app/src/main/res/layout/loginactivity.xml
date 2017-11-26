@@ -35,14 +35,6 @@
         android:onClick="NextActivity"
         android:text="보물을 찾아서! 출발!" />
 
-    <Button
-        android:id="@+id/maptest"
-        android:layout_gravity="center"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="gomap"
-        android:text="맵테스트" />
 
     <LinearLayout
 

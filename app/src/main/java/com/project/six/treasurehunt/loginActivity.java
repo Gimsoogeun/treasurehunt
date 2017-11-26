@@ -257,10 +257,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         mDatabaseReference.child("users").child(userId).child("email").setValue(email);
 
     }
-    public void gomap(View view){
-        Intent intent=new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
     //인터넷과 위치의 권한 허가
     public void permissionCheck(){
         String[] permissions =new String[]{Manifest.permission.INTERNET,
