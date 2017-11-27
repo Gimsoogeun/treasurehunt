@@ -176,7 +176,6 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
                         if( ((longitude-0.00007) <= post.longitude) && ((longitude+0.00007) >= post.longitude )) {
                             if(((latitude-0.00007) <= post.latitude) && ((latitude+0.00007) >= post.latitude )) {
                                 if( (startTimer <= temptTime) && ( temptTime <= endTimer) ) {
-                                    Toast.makeText(getApplicationContext(),"머지"+endTimer,Toast.LENGTH_SHORT).show();
                                     getReword(post.firebaseKey);
                                     break;
                                 }
