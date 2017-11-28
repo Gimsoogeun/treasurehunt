@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
@@ -37,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,6 +47,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -56,10 +60,13 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ValueEventListener mValueEventListener;
+    private ChildEventListener mChildEventListener;
     public GregorianCalendar cal;
     long currentTimeTotal;
     long currentDateTotal;
 
+
+    private ArrayList<Marker> TreasureMarkers;
     private Marker currentMarker=null;
     private GoogleMap googleMap;
 
@@ -69,19 +76,33 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     LocationCallback mLocationCallback;
     Location mCurrentLocation;
     LocationRequest mLocationRequest;
+
+    //query는 현재 위치에서 찾을수있는 보물을 검색하는데 쓰임
+    //query2는 로그인한 유저가 묻은 보물들을 보여주기위해 쓰임
     Query query;
+    Query query2;
+
+
+    //보물발견시 효과음 재생
+    SoundPool soundPool;
+    int soundid;
 
     public  EditText mEditText;
 
+    postAdapter mAdapter;
     postContext post;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       // mEditText=(EditText)findViewById(R.id.testInput);
-        initFirebaseDatabase();
+        soundPool=new SoundPool(1, AudioManager.STREAM_ALARM,0);
+        soundid=soundPool.load(this,R.raw.panpare,1);
+
+        TreasureMarkers=new ArrayList<Marker>();
+        mAdapter=new postAdapter(this,0);
         initView();
+        initFirebaseDatabase();
 
         mFusedLocatioinClient=LocationServices.getFusedLocationProviderClient(this);
         createLocationCallback();
@@ -89,28 +110,6 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         getCurrentLocation();
 
     }
-    private void firstStemp(){
-        String[] permissions =new String[]{android.Manifest.permission.INTERNET,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
-            for(String permission:permissions){
-                int result= PermissionChecker.checkSelfPermission(this,permission);
-                if(result==PermissionChecker.PERMISSION_GRANTED){
-
-                }else {
-                    ActivityCompat.requestPermissions(this,permissions,1);
-                }
-            }
-        }
-        if(Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        setCurrentLocation(mFusedLocatioinClient.getLastLocation().getResult(),"현재 위치",userName);
-    }
-
     private void getCurrentLocation(){
         String[] permissions =new String[]{android.Manifest.permission.INTERNET,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
@@ -158,6 +157,8 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         userName=user.getDisplayName();
 
         query=mDatabaseReference.orderByChild("isfinded").equalTo(false);
+        query2=mDatabaseReference.orderByChild("writerUID").equalTo(user.getUid());
+
         mValueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -177,6 +178,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
                             if(((latitude-0.00007) <= post.latitude) && ((latitude+0.00007) >= post.latitude )) {
                                 if( (startTimer <= temptTime) && ( temptTime <= endTimer) ) {
                                     getReword(post.firebaseKey);
+                                    soundPool.play(soundid,1.0f,1.0f,1,0,1.0f);
                                     break;
                                 }
                             }
@@ -189,7 +191,54 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
 
             }
         };
+        //
+        mChildEventListener=new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                postContext postcon=dataSnapshot.getValue(postContext.class);
+                postcon.firebaseKey=dataSnapshot.getKey();
+                mAdapter.add(postcon);
+                setTreasureMark();
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                String firebaseKey= dataSnapshot.getKey();
+                int count=mAdapter.getCount();
+                for(int i=0; i< count; i++){
+                    if(mAdapter.getItem(i).firebaseKey.equals(firebaseKey)){
+                        mAdapter.remove(mAdapter.getItem(i));
+                        postContext post=dataSnapshot.getValue(postContext.class);
+                        post.firebaseKey=dataSnapshot.getKey();
+                        mAdapter.add(post);
+                    }
+                }
+                setTreasureMark();
+            }
 
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                String firebaseKey= dataSnapshot.getKey();
+                int count=mAdapter.getCount();
+                for(int i=0; i< count; i++){
+                    if(mAdapter.getItem(i).firebaseKey.equals(firebaseKey)){
+                        mAdapter.remove(mAdapter.getItem(i));
+                        break;
+                    }
+                }
+                setTreasureMark();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query2.addChildEventListener(mChildEventListener);
     }
     public void getReword(String key){
         Intent intent=new Intent(this,findTreasureActivity.class);
@@ -204,6 +253,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         super.onStop();
         mFusedLocatioinClient.removeLocationUpdates(mLocationCallback);
     }
+
 
     private void initView(){
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
@@ -227,11 +277,8 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         startActivity(intent);
     }
     public void pushPostViewButton(View view) {
-
         Intent intent=new Intent(this, postsActivity.class);
-
         startActivity(intent);
-
     }
 
     public void currentInfo(View view){
@@ -251,6 +298,25 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         mapSetting.setZoomControlsEnabled(true);
         googleMap.setMinZoomPreference(14);
         //카메라를 서울 위치로 옮긴다.
+    }
+    public void setTreasureMark(){
+        for(int i=0; i<TreasureMarkers.size(); i++){
+            TreasureMarkers.get(i).remove();
+        }
+        TreasureMarkers.clear();
+        int count= mAdapter.getCount();
+        for(int i=0 ; i < count; i++){
+            if(!mAdapter.getItem(i).isfinded){
+                MarkerOptions markerOptions= new MarkerOptions();
+                LatLng latLng=new LatLng(mAdapter.getItem(i).latitude,mAdapter.getItem(i).longitude);
+                markerOptions.position(latLng);
+                markerOptions.title(mAdapter.getItem(i).title);
+                markerOptions.snippet("내가 숨긴 보물");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+
+                TreasureMarkers.add(this.googleMap.addMarker(markerOptions));
+            }
+        }
     }
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
         if ( currentMarker != null ){

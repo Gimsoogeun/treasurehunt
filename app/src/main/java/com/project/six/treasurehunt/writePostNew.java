@@ -477,6 +477,7 @@ public class writePostNew extends AppCompatActivity {
     }
     public void currentInfo(View view){
         Intent intent=new Intent(this, main.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

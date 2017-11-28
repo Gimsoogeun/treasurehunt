@@ -74,7 +74,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:minHeight="450sp"
+                    android:minHeight="400sp"
                     android:id="@+id/readPostContext"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -84,6 +84,7 @@
                     android:scrollbars="vertical" />
 
                 <ImageView
+                    android:layout_gravity="center"
                     android:id="@+id/descriptImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

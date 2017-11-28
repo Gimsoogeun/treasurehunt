@@ -251,6 +251,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
 
     public void NextActivity(View view){
         Intent intent=new Intent(this, main.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
     public void writeNewUser(String userId, String name, String email ){

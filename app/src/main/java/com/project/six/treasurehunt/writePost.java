@@ -242,6 +242,7 @@ public class writePost extends AppCompatActivity {
     }
     public void currentInfo(View view){
         Intent intent=new Intent(this, main.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
     }

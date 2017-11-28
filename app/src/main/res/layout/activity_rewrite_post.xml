@@ -88,6 +88,7 @@
                     android:gravity="top"
                     android:hint="내용을 입력하세요." />
                 <ImageView
+                    android:layout_gravity="center"
                     android:id="@+id/desImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -190,6 +191,7 @@
                         android:gravity="top"
                         android:hint="내용을 입력하세요." />
                     <ImageView
+                        android:layout_gravity="center"
                         android:id="@+id/rewordImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
