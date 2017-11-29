@@ -53,6 +53,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:layout_margin="10sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -79,6 +80,8 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:textSize="20sp"
+                    android:layout_margin="10sp"
                     android:id="@+id/FindedPostContext1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -102,6 +105,8 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:layout_margin="20sp"
+                    android:textSize="20sp"
                     android:minHeight="200sp"
                     android:id="@+id/FindedPostContext2"
                     android:layout_width="match_parent"

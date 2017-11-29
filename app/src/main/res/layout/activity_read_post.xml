@@ -45,6 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:layout_margin="10sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
@@ -74,14 +75,16 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:minHeight="400sp"
+                    android:layout_margin="20sp"
                     android:id="@+id/readPostContext"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="top"
+                    android:minHeight="400sp"
 
-                    android:scrollbars="vertical" />
+                    android:scrollbars="vertical"
+                    android:textSize="18sp" />
 
                 <ImageView
                     android:layout_gravity="center"

@@ -214,7 +214,7 @@ public class writePostNew extends AppCompatActivity {
                 SelectImage1.setImageBitmap(bitmap);
 
                 // After selecting image change choose button above text.
-                ChooseButton1.setText("Image Selected");
+                ChooseButton1.setText("이미지 선택됨");
 
             }
             catch (IOException e) {
@@ -234,7 +234,7 @@ public class writePostNew extends AppCompatActivity {
                 SelectImage2.setImageBitmap(bitmap);
 
                 // After selecting image change choose button above text.
-                ChooseButton2.setText("Image Selected");
+                ChooseButton2.setText("이미지 선택됨");
 
             }
             catch (IOException e) {
@@ -363,7 +363,7 @@ public class writePostNew extends AppCompatActivity {
                                 // Hiding the progressDialog after done uploading.
                                 progressDialog.dismiss();
                                 // Showing toast message after done uploading.
-                                Toast.makeText(getApplicationContext(), "Image Uploaded Successfully ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "이미지가 성공적으로 업로드되었습니다.", Toast.LENGTH_LONG).show();
                                 image1URL=taskSnapshot.getDownloadUrl().toString();
                                 post.imageURL1=image1URL;
                                 isEnded1=true;
@@ -415,7 +415,7 @@ public class writePostNew extends AppCompatActivity {
                                 // Hiding the progressDialog after done uploading.
                                 progressDialog2.dismiss();
                                 // Showing toast message after done uploading.
-                                Toast.makeText(getApplicationContext(), "Image Uploaded Successfully ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "이미지가 성공적으로 업로드 되었습니다.", Toast.LENGTH_LONG).show();
                                 image2URL=taskSnapshot.getDownloadUrl().toString();
                                 post.imageURL2=image2URL;
                                 isEnded2=true;
