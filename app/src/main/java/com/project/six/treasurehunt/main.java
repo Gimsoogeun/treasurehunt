@@ -47,20 +47,30 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class main extends FragmentActivity implements OnMapReadyCallback {
+    private final static String FCM_MESSAGE_URL= "https://fcm.googleapis.com/fcm/send";
+    static String serverKey;
     //초기 마커 위치입니다. 지도에 표기됨.
     private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
     double latitude;
     double longitude;
 
+    //파이어베이스 데이터베이스와 그에 붙여줄 이벤트 리스너
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ValueEventListener mValueEventListener;
     private ChildEventListener mChildEventListener;
+
     public GregorianCalendar cal;
     long currentTimeTotal;
     long currentDateTotal;
@@ -96,20 +106,16 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        soundPool=new SoundPool(1, AudioManager.STREAM_ALARM,0);
-        soundid=soundPool.load(this,R.raw.panpare,1);
 
-        TreasureMarkers=new ArrayList<Marker>();
-        mAdapter=new postAdapter(this,0);
         initView();
         initFirebaseDatabase();
 
-        mFusedLocatioinClient=LocationServices.getFusedLocationProviderClient(this);
         createLocationCallback();
         createLocationRequest();
         getCurrentLocation();
 
     }
+    //현재 위치를 gps에서 받아옵니다.
     private void getCurrentLocation(){
         String[] permissions =new String[]{android.Manifest.permission.INTERNET,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
@@ -132,7 +138,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
 
         mFusedLocatioinClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
     }
-
+    //현재 위치를 갱신하는 콜백을 호출합니다.
     private void createLocationCallback(){
         mLocationCallback=new LocationCallback(){
             @Override
@@ -143,14 +149,27 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
             }
         };
     }
+    //location 요청하는 빈도와 정확도를 설정합니다.
     private void createLocationRequest(){
         mLocationRequest=new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(2500);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+    //파이어베이스 데이터베이스를 초기화하며 이벤트 리스너를 생성합니다.
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
+        mFirebaseDatabase.getReference().child("SERVER_KEY").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                serverKey=(String)dataSnapshot.getValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         mDatabaseReference = mFirebaseDatabase.getReference("posts");
         mauth=FirebaseAuth.getInstance();
         FirebaseUser user=mauth.getCurrentUser();
@@ -177,6 +196,8 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
                         if( ((longitude-0.00007) <= post.longitude) && ((longitude+0.00007) >= post.longitude )) {
                             if(((latitude-0.00007) <= post.latitude) && ((latitude+0.00007) >= post.latitude )) {
                                 if( (startTimer <= temptTime) && ( temptTime <= endTimer) ) {
+                                    sendPostToFCM(post,mauth.getCurrentUser().getDisplayName()+"님이 당신이 묻은 보물 "+post.title+
+                                            "을 발견했습니다!");
                                     getReword(post.firebaseKey);
                                     soundPool.play(soundid,1.0f,1.0f,1,0,1.0f);
                                     break;
@@ -245,8 +266,59 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         intent.putExtra("firebaseKey",key);
         startActivity(intent);
     }
+    //받아온 포스트를 쓴 작성자에게 FCM 메세지를 보냅니다.
+    public void sendPostToFCM(final postContext post, final String message){
+
+        mFirebaseDatabase.getReference("users").child(post.writerUID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final userInfo userinfo=dataSnapshot.getValue(userInfo.class);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            //fcm 메세지
+                            JSONObject root =new JSONObject();
+                            JSONObject notification=new JSONObject();
+                            notification.put("body",message);
+                            notification.put("title",getString(R.string.app_name));
+                            root.put("notification",notification);
+                            root.put("to",userinfo.fcmToken);
+                            //fcm url로 보내줍니다
+                            URL url=new URL(FCM_MESSAGE_URL);
+                            HttpURLConnection conn=(HttpURLConnection)url.openConnection();
+                            conn.setRequestMethod("POST");
+                            conn.setDoOutput(true);
+                            conn.setDoInput(true);
+                            conn.addRequestProperty("Authorization","key="+serverKey);
+                            conn.setRequestProperty("Accept","application/json");
+                            conn.setRequestProperty("Content-type", "application/json");
+                            OutputStream os=conn.getOutputStream();
+                            os.write(root.toString().getBytes("utf-8"));
+                            os.flush();
+                            conn.getResponseCode();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
     protected void onResume(){
         super.onResume();
+        initView();
+        initFirebaseDatabase();
+        createLocationCallback();
+        createLocationRequest();
         getCurrentLocation();
     }
     protected void onStop(){
@@ -256,6 +328,12 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
 
 
     private void initView(){
+        soundPool=new SoundPool(1, AudioManager.STREAM_ALARM,0);
+        soundid=soundPool.load(this,R.raw.panpare,1);
+        TreasureMarkers=new ArrayList<Marker>();
+        mAdapter=new postAdapter(this,0);
+        mFusedLocatioinClient=LocationServices.getFusedLocationProviderClient(this);
+
         SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         cal=new GregorianCalendar();

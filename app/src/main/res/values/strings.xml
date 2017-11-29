@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">treasurehunt</string>
+    <string name="app_name">보물찾기</string>
     <string name="title_activity_testact">testact</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>

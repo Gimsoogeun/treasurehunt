@@ -13,8 +13,4 @@ public class userInfo {
     public long FindTreasure;
     public long HideTreasure;
     public String fcmToken;
-    public userInfo(String userName,String email){
-        this.userName=userName;
-        this.email=email;
-    }
 }

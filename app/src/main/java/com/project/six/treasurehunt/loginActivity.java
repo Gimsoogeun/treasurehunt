@@ -3,6 +3,7 @@ package com.project.six.treasurehunt;
 import android.*;
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import java.util.Random;
@@ -85,6 +87,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         initFirebaseDatabase();
         initFirebaseAuth();
         permissionCheck();
+
     }
 
     //뷰를 초기화함
@@ -101,7 +104,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     //firebase databse 를 초기화함
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
-
+        mDatabaseReference=mFirebaseDatabase.getReference();
     }
 
     //auth 관련 초기화함
@@ -130,6 +133,11 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
 
     }
 
+    //fcm token 을 유저정보에 저장합니다.
+    public void updateUserToken(String userId){
+        String fcmtoken= FirebaseInstanceId.getInstance().getToken();
+        mDatabaseReference.child("users").child(userId).child("fcmToken").setValue(fcmtoken);
+    }
     //auth 리스너에서 사용할 함수
     //현재 로그인 상태에 따라 view들을 숨기거나 보여줌.
     private void updateProfile(){
@@ -145,18 +153,17 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             //추가로 로그인 안됬을시 변경할것들 추가
         }else{
             //로그인이 되어있다!!!
+            updateUserToken(user.getUid());
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
             mTxtProfileInfo.setVisibility(View.VISIBLE);
             mImgProfile.setVisibility(View.VISIBLE);
             mTxtProfileEmail.setVisibility(View.VISIBLE);
             GoTreasureHunt.setVisibility(View.VISIBLE);
-
             userName=user.getDisplayName();
             mTxtProfileInfo.setText(userName);
             userEmail=user.getEmail();
             mTxtProfileEmail.setText(userEmail);
-
             Picasso.with(this).load(user.getPhotoUrl()).into(mImgProfile);
         }
     }
@@ -255,8 +262,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         startActivity(intent);
     }
     public void writeNewUser(String userId, String name, String email ){
-
-        mDatabaseReference=mFirebaseDatabase.getReference();
         mDatabaseReference.child("users").child(userId).child("userName").setValue(name);
         mDatabaseReference.child("users").child(userId).child("email").setValue(email);
 
@@ -303,9 +308,5 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             return;
         }
 
-    }
-    public void testupload(View v){
-        Intent intent=new Intent(this,writePostNew.class);
-        startActivity(intent);
     }
 }

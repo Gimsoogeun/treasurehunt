@@ -28,7 +28,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".main" />
-        <activity android:name=".writePost" />
         <activity android:name=".postsActivity" />
         <activity android:name=".readPost" />
         <activity android:name=".rewritePost" />
@@ -46,9 +45,14 @@
 
         <activity android:name=".findTreasureActivity" />
         <activity android:name=".findPostsActivity" />
-        <activity android:name=".uploadImageTest" />
         <activity android:name=".writePostNew" />
 
+        <service
+            android:name=".fcmService" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
