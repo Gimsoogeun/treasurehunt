@@ -58,10 +58,13 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class main extends FragmentActivity implements OnMapReadyCallback {
+    //파이어베이스에 메세지를 보낼 주소
     private final static String FCM_MESSAGE_URL= "https://fcm.googleapis.com/fcm/send";
+    //파이어베이스에서 서버키를 받아와 사용합니다.
     static String serverKey;
     //초기 마커 위치입니다. 지도에 표기됨.
     private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
+    //현재 위도경도를 받아올 변수
     double latitude;
     double longitude;
 
@@ -71,36 +74,39 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
     private ValueEventListener mValueEventListener;
     private ChildEventListener mChildEventListener;
 
+    //현재 시각과 날짜를 확인하기위한 변수입니다.
     public GregorianCalendar cal;
     long currentTimeTotal;
     long currentDateTotal;
 
-
+    //현재 사용자가 숨긴 게시물(보물)들을 지도에 표시하기위한 마커들을 ArrayList에 저장해놓기 위해 사용되는 변수입니다.
     private ArrayList<Marker> TreasureMarkers;
+    //사용자의 현재 위치를 나타내는 마커입니다.
     private Marker currentMarker=null;
     private GoogleMap googleMap;
-
+    //현재 유저정보를 얻기위해 사용되는 변수입니다.
     FirebaseAuth mauth;
     String userName;
+    //현재 위치를 받아오기 위해 사용되는 변수들입니다.
     FusedLocationProviderClient mFusedLocatioinClient;
     LocationCallback mLocationCallback;
     Location mCurrentLocation;
     LocationRequest mLocationRequest;
 
-    //query는 현재 위치에서 찾을수있는 보물을 검색하는데 쓰임
-    //query2는 로그인한 유저가 묻은 보물들을 보여주기위해 쓰임
+    //query는 현재 위치에서 찾을수있는 보물을 검색하는데 쓰입니다
+    //query2는 로그인한 유저가 묻은 보물들을 보여주기위해 쓰입니다
     Query query;
     Query query2;
 
 
-    //보물발견시 효과음 재생
+    //보물발견시 효과음을 재생합니다.
     SoundPool soundPool;
     int soundid;
-
-    public  EditText mEditText;
-
+    //찾아낸 보물의 정보를 담기위한 변수들입니다.
     postAdapter mAdapter;
     postContext post;
+    //activity가 시작시 view와 firebase관련 변수를 초기화합니다.
+    //그후 현재 사용자의 위치를 지도에 마커로 표기하고, 그 위치로 지도의 시점을 이동시킵니다.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -261,6 +267,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         };
         query2.addChildEventListener(mChildEventListener);
     }
+    //보물을 발견했을시 findTreasureActivity로 이동합니다.
     public void getReword(String key){
         Intent intent=new Intent(this,findTreasureActivity.class);
         intent.putExtra("firebaseKey",key);
@@ -313,6 +320,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         });
 
     }
+    //activity가 중지되었다 다시 재시작되었을시 view와 firebase를 초기화합니다. 그후 현재 위치로 지도를 이동합니다.
     protected void onResume(){
         super.onResume();
         initView();
@@ -321,12 +329,13 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         createLocationRequest();
         getCurrentLocation();
     }
+    //activity가 정지시 위치정보 갱신을 중단합니다.
     protected void onStop(){
         super.onStop();
         mFusedLocatioinClient.removeLocationUpdates(mLocationCallback);
     }
 
-
+    //view들을 초기화합니다.
     private void initView(){
         soundPool=new SoundPool(1, AudioManager.STREAM_ALARM,0);
         soundid=soundPool.load(this,R.raw.panpare,1);
@@ -339,13 +348,16 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
         cal=new GregorianCalendar();
 
     }
+    //땅파기 버튼을 눌렀을경우, 이벤트 리스너를 추가하여 현재 위치에 게시글이 있는지 탐색합니다.
     public void clickDigButton(View view){
         query.addListenerForSingleValueEvent(mValueEventListener);
     }
+    //내가 찾은 보물 버튼을 눌렀을경우 activity를 이동합니다.
     public void myInfoButton(View view){
         Intent intent=new Intent(this, findPostsActivity.class);
         startActivity(intent);
     }
+    //보물 묻기 버튼을 눌렀을경우 게시글 작성 화면으로 이동합니다.
     public void pushButton(View view) {
 
         Intent intent=new Intent(this, writePostNew.class);
@@ -354,29 +366,29 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
 
         startActivity(intent);
     }
+    //게시글 보기 버튼을 눌렀을 경우 화면을 이동합니다.
     public void pushPostViewButton(View view) {
         Intent intent=new Intent(this, postsActivity.class);
         startActivity(intent);
     }
-
+    //main이 현재 정보이기때문에 아무 역할도 하지않습니다.
     public void currentInfo(View view){
 
     }
-
+    //구글 맵을 초기화합니다.
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // 구글 맵 객체를 불러온다.
         this.googleMap = googleMap;
 
-        // 서울에 대한 위치 설정
         LatLng seoul = new LatLng(37.52487, 126.92723);
 
         UiSettings mapSetting;
         mapSetting=this.googleMap.getUiSettings();
         mapSetting.setZoomControlsEnabled(true);
         googleMap.setMinZoomPreference(14);
-        //카메라를 서울 위치로 옮긴다.
     }
+    //숨긴 보물들의 위치를 지도에 표시합니다.
     public void setTreasureMark(){
         for(int i=0; i<TreasureMarkers.size(); i++){
             TreasureMarkers.get(i).remove();
@@ -396,6 +408,7 @@ public class main extends FragmentActivity implements OnMapReadyCallback {
             }
         }
     }
+    //현재 사용자의 위치를 마커로 나타냅니다.
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
         if ( currentMarker != null ){
             currentMarker.remove();

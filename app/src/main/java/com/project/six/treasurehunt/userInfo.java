@@ -3,7 +3,7 @@ package com.project.six.treasurehunt;
 import java.util.List;
 
 /**
- * Created by gunhe on 2017-11-24.
+ * 유저의 정보를 받아오는데 사용하는 class입니다.
  */
 
 public class userInfo {

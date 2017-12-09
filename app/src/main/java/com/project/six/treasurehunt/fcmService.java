@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+//FCM을 이용하여 보물을 발견시 보물을 숨긴 사람에게 메세지를 보냅니다.
+//fcmService class에서는 그 메세지를 받아 숨겨뒀던 보물이 발견됬음을 알리도록 합니다.
 public class fcmService extends FirebaseMessagingService {
     private final static String TAG = "FCM_MESSAGE";
 

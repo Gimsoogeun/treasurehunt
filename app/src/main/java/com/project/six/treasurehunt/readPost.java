@@ -21,17 +21,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
-
+//postsActivity에서 선택된 게시글의 정보를 보여주는 화면입니다.
+//여기서는 게시글의 힌트만을 볼수있습니다.
 public class readPost extends AppCompatActivity {
+    //firebase에서 게시글의 정보를 얻어옵니다.
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
 
+    //view의 정보들과 게시글의 내용을 받아오는 변수들입니다.
     ImageView descriptImage;
     postContext post;
     TextView textViewtitle;
     TextView textViewcontext;
 
     FirebaseAuth mAuth;
+    //시작시 각 view들을 초기화하고 firebase를 초기화합니다.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,10 +56,12 @@ public class readPost extends AppCompatActivity {
         mAuth=FirebaseAuth.getInstance();
         initFirebaseDatabase();
     }
+    //파이어베이스를 초기화합니다.
     private void initFirebaseDatabase(){
         mFirebaseDatabase= FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference("posts");
     }
+    //글 수정 버튼을 눌렀을경우 글의 작성자와 같으면 수정합니다.
     public void onRewrite(View view){
         NetworkInfo mNetworkState=getNetworkInfo();
         if(mNetworkState!=null && mNetworkState!=null && mNetworkState.isConnected()) {
@@ -72,9 +78,11 @@ public class readPost extends AppCompatActivity {
             Toast.makeText(this, "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
         }
     }
+    //닫기 버튼을 눌렀을 경우 화면을 종료합니다.
     public void clickClose(View view){
         finish();
     }
+    //삭제 버튼을 눌렀을경우 글의 작성자와 현재 사용자가 같다면 삭제합니다.
     public void clickRemove(View view){
         NetworkInfo mNetworkState=getNetworkInfo();
         if(mNetworkState!=null &&mNetworkState.isConnected()) {
@@ -96,22 +104,26 @@ public class readPost extends AppCompatActivity {
             Toast.makeText(this, "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
         }
     }
+    //현재 정보 버튼을 누르면 화면을 이동합니다.
     public void currentInfo(View view){
         Intent intent=new Intent(this, main.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
+    //게시글 보기 버튼을 누르면 화면을 이동합니다.
     public void pushPostViewButton(View view) {
         Intent intent=new Intent(this, postsActivity.class);
         startActivity(intent);
         finish();
     }
+    //현재 인터넷 접속이 되어있는지 확인합니다.
     private NetworkInfo getNetworkInfo(){
         ConnectivityManager connectivityManager=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=connectivityManager.getActiveNetworkInfo();
         return networkInfo;
     }
+    //내가 찾은 보물 버튼을 눌렀을 경우 화면을 이동합니다.
     public void myInfoButton(View view){
         Intent intent=new Intent(this, findPostsActivity.class);
         startActivity(intent);

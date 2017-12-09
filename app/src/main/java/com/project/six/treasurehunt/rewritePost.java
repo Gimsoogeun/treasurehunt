@@ -41,13 +41,14 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+//글을 재작성하는 activity입니다.
 public class rewritePost extends AppCompatActivity {
-    //이미지 업로드를 위한 경로 storage
+    //이미지 업로드를 위한 경로, firebasestorage 에 저장되는 위치입니다.
     String Storage_Path="All_Image_Uploads/";
     Button ChooseButton1, ChooseButton2;
-    // Creating ImageView.
+    // 이미지들을 보여주기위해 사용하는 imageview들입니다.
     ImageView SelectImage1, SelectImage2;
-    // Creating URI. 업로드할 파일의 경로를 얻습니다.
+    // 업로드할 파일의 경로를 얻습니다.
     Uri FilePathUri1;
     Uri FilePathUri2;
     //데이터베이스에 저장될 url 입니다.
@@ -58,36 +59,33 @@ public class rewritePost extends AppCompatActivity {
     boolean imGoingtoDo=false;
     //이미지를 업로드하기 위해 firestorage사용
     StorageReference storageReference;
-    //이미지 업로드중이라는것을 보여주는 창
+    //이미지 업로드중이라는것을 보여주는 창입니다.
     ProgressDialog progressDialog ;
     ProgressDialog progressDialog2;
-    // Image request code for onActivityResult() .
+    //  onActivityResult() 에서 결과값을 받아올때 사용합니다.
     int Image_Request_Code1 = 7;
     int Image_Request_Code2 = 8;
 
-
+    //게시글을 발견할수있는 시작시간과 종료시간입니다
     public int sYear,sMonth,sDay,sHour,sMinute;
-
     public int eYear,eMonth,eDay,eHour,eMinute;
-
     long startDateTotal;
     long startTimeTotal;
     long endDateTotal;
     long endTimeTotal;
-
+    //현재 시각을 나타냅니다.
     long currentTimeTotal;
     long currentDateTotal;
-
     public GregorianCalendar cal;
 
-
+    //게시글의 firebasekey를 나타냅니다.
     String postfirebaseKey;
 
-
+    //firebase를 사용하기위한 변수들입니다.
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
-    private ValueEventListener mValueEventListener;
 
+    //view들과 게시글의 내용을 저장할 postContext입니다.
     postContext post;
     public TextView mStartDate;
     public TextView mStartTime;
@@ -132,18 +130,21 @@ public class rewritePost extends AppCompatActivity {
             endTimeDateUpdate();
         }
     };
+    //시작시간과 날짜를 view에 나타냅니다.
     void startTimeDateUpdate(){
 
         mStartDate.setText(String.format("%d/%d/%d", sYear, sMonth + 1, sDay));
         mStartTime.setText(String.format("%d:%d", sHour, sMinute));
 
     }
+    //종료시간과 날짜를 view에 나타냅니다.
     void endTimeDateUpdate(){
 
         mEndDate.setText(String.format("%d/%d/%d", eYear, eMonth + 1, eDay));
         mEndTime.setText(String.format("%d:%d", eHour, eMinute));
 
     }
+    //사용자가 시작시간을 설정합니다.
     public void onClickStartTime(View view){
         new DatePickerDialog(rewritePost.this, sDateListener, sYear,
                 sMonth, sDay).show();
@@ -151,12 +152,14 @@ public class rewritePost extends AppCompatActivity {
 
 
     }
+    //사용자가 종료시간을 설정합니다.
     public void onClickEndTime(View view){
         new DatePickerDialog(rewritePost.this, eDateListener, eYear,
                 eMonth, eDay).show();
         new TimePickerDialog(rewritePost.this,eTimeListener,eHour,eMinute,true).show();
 
     }
+    //activity가 시작시 뷰를 초기화하고 firebase를 초기화합니다.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,6 +169,7 @@ public class rewritePost extends AppCompatActivity {
         initView();
         initFirebaseDatabase();
     }
+    //view를 초기화합니다.
     public void initView(){
         titleEdittext=(EditText)findViewById(R.id.RWtitleET);
         context1Edittext=(EditText)findViewById(R.id.RWcontext1ET);
@@ -183,6 +187,7 @@ public class rewritePost extends AppCompatActivity {
 
         cal=new GregorianCalendar();
     }
+    //이미지 추가버튼을 눌렀을경우 이미지를 찾도록합니다.
     public void ChooseButton1Click(View view){
         Intent intent=new Intent();
         // Setting intent type as image to select image from phone storage.
@@ -197,6 +202,7 @@ public class rewritePost extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Please Select Image"), Image_Request_Code2);
     }
+    //이미지가 선택되었을때 버튼의 text를 변경합니다. 그리고 이미지의 uri를 받아옵니다.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -255,6 +261,7 @@ public class rewritePost extends AppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri)) ;
 
     }
+    //firebase와 관련된 변수를 초기화하고 리스너를 추가합니다.
     private void initFirebaseDatabase(){
         storageReference= FirebaseStorage.getInstance().getReference();
         mFirebaseDatabase= FirebaseDatabase.getInstance();
@@ -290,6 +297,10 @@ public class rewritePost extends AppCompatActivity {
         Query query;
 
     }
+    //수정 버튼을 눌렀을경우 게시글이 수정하기 적합하닞 확인합니다.
+    //시작시간은 현재 시간보다 뒤여야하고, 종료시간은 시작시간보다 뒤여야합니다.
+    //문제가 없다면 이미지가 업로드 될때까지 대기하도록합니다.
+    //모든게 문제없이 진행됬다면 수정창을 종료합니다.
     public void onClickReWrite(View view){
         NetworkInfo mNetworkState=getNetworkInfo();
         if( mNetworkState!=null && mNetworkState.isConnected()) {
@@ -448,12 +459,13 @@ public class rewritePost extends AppCompatActivity {
             Toast.makeText(this, "인터넷 연결을 확인해 주세요.", Toast.LENGTH_SHORT).show();
         }
     }
+    //이미지 업로드가 끝났을경우에만 데이터베이스에 게시글을 추가하도록합니다.
     public void endUpload(){
         if(isEnded1 && isEnded2 && !imGoingtoDo){
             pushVeluetoDatabase();
         }
     }
-
+    //게시글을 추가합니다.
     public void pushVeluetoDatabase(){
         imGoingtoDo=true;
         mDatabaseReference.setValue(post, new DatabaseReference.CompletionListener() {
@@ -469,22 +481,26 @@ public class rewritePost extends AppCompatActivity {
             }
         });
     }
+    //현재 정보 버튼을 눌렀을 경우 화면을 이동합니다
     public void currentInfo(View view){
         Intent intent=new Intent(this, main.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
+    //게시글보기를 눌렀을경우 화면을 이동합니다.
     public void pushPostViewButton(View view) {
         Intent intent=new Intent(this, postsActivity.class);
         startActivity(intent);
         finish();
     }
+    //내가 찾은 보물을 눌렀을 경우 화면을 이동합니다
     public void myInfoButton(View view){
         Intent intent=new Intent(this, findPostsActivity.class);
         startActivity(intent);
         finish();
     }
+    //현재 인터넷이 접속되어있는지 확인합니다.
     private NetworkInfo getNetworkInfo(){
         ConnectivityManager connectivityManager=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=connectivityManager.getActiveNetworkInfo();

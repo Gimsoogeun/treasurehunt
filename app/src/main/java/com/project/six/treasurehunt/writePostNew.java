@@ -40,11 +40,12 @@ import com.google.firebase.storage.UploadTask;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
+//새로운 게시글을 작성하는 화면입니다.
 public class writePostNew extends AppCompatActivity {
 
     //이미지 업로드를 위한 경로 storage
     String Storage_Path="All_Image_Uploads/";
-
+    //이미지 업로드하기 버튼
     Button ChooseButton1, ChooseButton2;
     // Creating ImageView.
     ImageView SelectImage1, SelectImage2;
@@ -55,17 +56,16 @@ public class writePostNew extends AppCompatActivity {
     //데이터베이스에 저장될 url 입니다.
     String image1URL;
     String image2URL;
-
-
+    //이미지가 업로드 성공했는지 아닌지 확인하기위한 boolean변수들입니다
     boolean isEnded1=false;
     boolean isEnded2=false;
     boolean imGoingtoDo=false;
 
-
+    //업로드할 게시글의 정보를 post에 담습니다.
     postContext post;
     //이미지를 업로드하기 위해 firestorage사용
     StorageReference storageReference;
-    // Image request code for onActivityResult() .
+    // onActivityResult() 에서 결과값을 받기 위해 사용합니다
     int Image_Request_Code1 = 7;
     int Image_Request_Code2 = 8;
     //이미지 업로드중이라는것을 보여주는 창
@@ -75,17 +75,13 @@ public class writePostNew extends AppCompatActivity {
     //시간을 계산하기위함.
     public int sYear,sMonth,sDay,sHour,sMinute;
     public int eYear,eMonth,eDay,eHour,eMinute;
-
     long startDateTotal;
     long startTimeTotal;
     long endDateTotal;
     long endTimeTotal;
-
     long currentTimeTotal;
     long currentDateTotal;
-
     public GregorianCalendar cal;
-
     public TextView mStartDate;
     public TextView mStartTime;
     public TextView mEndDate;
@@ -127,16 +123,18 @@ public class writePostNew extends AppCompatActivity {
         }
     };
 
+    //views
     public EditText titleET;
     public EditText context1;
     public EditText context2;
 
+    //게시글을 작성하는 위치입니다.
     double latitude;
     double longitude;
-
+    //firebase를 사용하기위한 변수입니다.
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
-    private ValueEventListener mValueEventListener;
+    //activity시작시 뷰를 초기화하고 firebase를 초기화합니다.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,10 +146,10 @@ public class writePostNew extends AppCompatActivity {
         initView();
         initFirebaseDatabase();
 
-
     }
+    //view를 초기화합니다.
     public void initView(){
-        //이미지 추가 뷰
+
         SelectImage1=(ImageView)findViewById(R.id.desImage);
         SelectImage2=(ImageView)findViewById(R.id.rewordImage);
         progressDialog=new ProgressDialog(this);
@@ -182,6 +180,7 @@ public class writePostNew extends AppCompatActivity {
         startTimeDateUpdate();
         endTimeDateUpdate();
     }
+    //이미지 추가 버튼을 눌렀을경우 저장장치에서 image를 찾습니다.
     public void ChooseButton1Click(View view){
         Intent intent=new Intent();
         // Setting intent type as image to select image from phone storage.
@@ -196,6 +195,7 @@ public class writePostNew extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Please Select Image"), Image_Request_Code2);
     }
+    //이미지 추가에 대한 결과를 확인합니다. image_request_code1은 힌트에 사용될 이미지에 대한 결과입니다. 2는 보상내용에 사용될 이미지입니다.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -254,7 +254,7 @@ public class writePostNew extends AppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri)) ;
 
     }
-
+    //시작시간과 종료시간을 view에 나타냅니다.
     void startTimeDateUpdate(){
 
         mStartDate.setText(String.format("%d/%d/%d", sYear, sMonth + 1, sDay));
@@ -267,24 +267,27 @@ public class writePostNew extends AppCompatActivity {
         mEndTime.setText(String.format("%d:%d", eHour, eMinute));
 
     }
+    //firebase를 초기화합니다.
     private void initFirebaseDatabase(){
         storageReference= FirebaseStorage.getInstance().getReference();
         mFirebaseDatabase= FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference("posts");
     }
+    //시작시간과 종료시간을 사용자가 설정하도록 합니다.
     public void onClickStartTime(View view){
         new DatePickerDialog(writePostNew.this, sDateListener, sYear,
                 sMonth, sDay).show();
         new TimePickerDialog(writePostNew.this,sTimeListener,sHour,sMinute,true).show();
-
-
     }
     public void onClickEndTime(View view){
         new DatePickerDialog(writePostNew.this, eDateListener, eYear,
                 eMonth, eDay).show();
         new TimePickerDialog(writePostNew.this,eTimeListener,eHour,eMinute,true).show();
-
     }
+    //글 작성을 눌렀을경우 작성하기 적합한지 확인합니다.
+    //현재 시각보다 게시글을 탐색가능한 시각이 늦어야하고,
+    //게시글 탐색 종료시간이 시작시간보다 늦어야합니다.
+    //또한 인터넷에 연결되어있어야합니다.
     public void onClickWrite(View view){
 
         NetworkInfo mNetworkState=getNetworkInfo();
@@ -453,13 +456,13 @@ public class writePostNew extends AppCompatActivity {
 
         }
     }
-
+    //업로드를 끝마쳤는지 확인합니다.
     public void endUpload(){
         if(isEnded1 && isEnded2 && !imGoingtoDo){
             pushVeluetoDatabase();
         }
     }
-
+    //데이터베이스에 게시글을 저장하도록합니다.
     public void pushVeluetoDatabase(){
         imGoingtoDo=true;
         mDatabaseReference.push().setValue(post, new DatabaseReference.CompletionListener() {
@@ -475,22 +478,26 @@ public class writePostNew extends AppCompatActivity {
             }
         });
     }
+    //현재 정보를 눌렀을 경우 화면을 이동합니다
     public void currentInfo(View view){
         Intent intent=new Intent(this, main.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
+    //게시글보기 버튼을 눌렀을 경우 화면을 이동합니다.
     public void pushPostViewButton(View view) {
         Intent intent=new Intent(this, postsActivity.class);
         startActivity(intent);
         finish();
     }
+    //내가 찾은 보물을 눌렀을 경우 화면을 이동합니다
     public void myInfoButton(View view){
         Intent intent=new Intent(this, findPostsActivity.class);
         startActivity(intent);
         finish();
     }
+    //네트워크가 접속되어있는지 확인합니다.
     private NetworkInfo getNetworkInfo(){
         ConnectivityManager connectivityManager=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=connectivityManager.getActiveNetworkInfo();

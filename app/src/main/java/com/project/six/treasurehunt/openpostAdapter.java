@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 /**
- * Created by gunhe on 2017-11-24.
+ * 발견한 게시글의 정보들을 activity에 listview로 나타내기위해 사용하는 adapter입니다.
  */
 
 public class openpostAdapter extends ArrayAdapter<postContext> {
@@ -17,6 +17,7 @@ public class openpostAdapter extends ArrayAdapter<postContext> {
         super(context, resource);
 
     }
+    //view로 postContext의 정보들을 나타냅니다. 이때 layout은 openpostitem.xml
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;

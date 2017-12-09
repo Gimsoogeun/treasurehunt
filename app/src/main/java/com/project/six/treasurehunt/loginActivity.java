@@ -63,7 +63,6 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     private ValueEventListener mValueEventListener;
 
     //views
-    //Sign in button
     SignInButton signInButton; //로그인 버튼
     Button signOutButton;  //로그아웃 버튼
     Button GoTreasureHunt;
@@ -74,10 +73,8 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
     private String userName; //사용자 이름
     private String userEmail; //사용자 이메일
 
-
-
+    //sign in
     private static final int RC_SIGN_IN=9001;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,21 +135,21 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         String fcmtoken= FirebaseInstanceId.getInstance().getToken();
         mDatabaseReference.child("users").child(userId).child("fcmToken").setValue(fcmtoken);
     }
-    //auth 리스너에서 사용할 함수
+
     //현재 로그인 상태에 따라 view들을 숨기거나 보여줌.
     private void updateProfile(){
         FirebaseUser user=mAuth.getCurrentUser();
         if(user== null){
-            //현재 로그인한 유저가 없다요!!
+            //현재 로그인한 유저가 없으면
             signInButton.setVisibility(View.VISIBLE);
             signOutButton.setVisibility(View.GONE);
             mTxtProfileInfo.setVisibility(View.GONE);
             mImgProfile.setVisibility(View.GONE);
             mTxtProfileEmail.setVisibility(View.GONE);
             GoTreasureHunt.setVisibility(View.GONE);
-            //추가로 로그인 안됬을시 변경할것들 추가
+            //추가로 로그인 안됬을시 변경할것들 추가할수 있다.
         }else{
-            //로그인이 되어있다!!!
+            //로그인이 되어있을 경우
             updateUserToken(user.getUid());
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
@@ -168,13 +165,12 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         }
     }
 
-
+    //activity start시 리스너를 추가한다.
     protected void onStart(){
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-//        mGoogleApiClient.connect();
-
     }
+    //activity가 정지됬을시 리스너를 제거한다.
     @Override
     public void onStop() {
         super.onStop();
@@ -191,12 +187,12 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         super.onDestroy();
 
     }
-
+    //접속이 실패했을때 Toast로 접속이 실패 되었음을 알린다.
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(getApplicationContext(), ""+connectionResult, Toast.LENGTH_SHORT).show();
     }
-
+    //로그인 버튼이 눌렸을때와 로그아웃 버튼이 눌렸을때 각각 signin() 과 signOut()을 호출한다.
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -208,10 +204,12 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
                 break;
         }
     }
+    //로그인버튼이 눌렸을 경우 googleApi를 이용하여 구글로그인을 시도한다
     private void signIn(){
         Intent signInIntent=Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent,RC_SIGN_IN);
     }
+    //로그 아웃 버튼이 눌렸을경우 googleApi를 사용하여 로그인된 계정을 로그아웃한다.
     private void signOut(){
         mAuth.signOut();
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
@@ -221,6 +219,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
             }
         });
     }
+    //로그인 요청 결과에 따른 값을 받아온다. RC_sign_in과 같은 값이라면 로그인과정을 계속 진행한다.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
@@ -255,7 +254,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         }
 
     }
-
+    //로그인 이후 main Activity로 이동하도록 한다.
     public void NextActivity(View view){
         Intent intent=new Intent(this, main.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -266,7 +265,7 @@ public class loginActivity extends AppCompatActivity implements  GoogleApiClient
         mDatabaseReference.child("users").child(userId).child("email").setValue(email);
 
     }
-    //인터넷과 위치의 권한 허가
+    //인터넷과 위치의 권한 허가를 확인한다. 권한이 없다면 앱을 사용하지 못하도록 한다.
     public void permissionCheck(){
         String[] permissions =new String[]{Manifest.permission.INTERNET,
                 Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};

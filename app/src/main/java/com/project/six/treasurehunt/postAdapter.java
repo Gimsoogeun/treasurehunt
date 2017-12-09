@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 /**
- * Created by gunhe on 2017-11-24.
+ * 게시글의 정보들을 activity에 listview로 나타내기위해 사용하는 adapter입니다.
  */
 
 public class postAdapter extends ArrayAdapter<postContext> {
